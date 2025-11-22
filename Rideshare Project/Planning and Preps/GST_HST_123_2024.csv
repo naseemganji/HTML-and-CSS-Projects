@@ -1,0 +1,7 @@
+Field,Value
+reporting_period_start,2023-10-01
+reporting_period_end,2024-09-30
+total_taxable_sales,48000.0
+zero_rated_sales,2000.0
+exempt_sales,0.0
+input_tax_credits,1200.0

@@ -1,0 +1,11 @@
+Field,Value
+business_name,DriveLedger User 123
+business_number,123456789RT0001
+tax_year,2024
+gross_receipts,50000.0
+motor_vehicle_expenses,8000.0
+mileage_business_km,20000
+fuel,3000.0
+insurance,1200.0
+maintenance,1000.0
+other_expenses,500.0
