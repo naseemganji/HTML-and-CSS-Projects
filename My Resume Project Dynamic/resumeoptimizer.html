@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Generator | DeepSeek Integration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-robot me-2"></i>AI Resume Generator
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-database me-1"></i> Templates</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-download me-1"></i> Pricing</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-4">AI-Powered Resume Generation</h1>
+            <p class="lead mb-4">Leverage DeepSeek AI to create tailored resumes that get noticed by employers</p>
+            <button class="btn btn-light btn-lg px-4">
+                <i class="fas fa-bolt me-2"></i>Generate Your Resume Now
+            </button>
+        </div>
+    </section>
+    
+    <div class="container" id="resume-container">
+        <div class="card mb-4" id="edit-controls">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-sliders-h me-2"></i>Resume Controls
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="font-select" class="form-label">Font Style</label>
+                        <select id="font-select" class="form-select">
+                            <option value="'Helvetica Neue', Helvetica, Arial, sans-serif" selected>Helvetica Neue</option>
+                            <option value="'Arial', sans-serif">Arial</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="primary-color" class="form-label">Primary Color</label>
+                        <input type="color" id="primary-color" class="form-control form-control-color" value="#1565C0">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="text-color" class="form-label">Text Color</label>
+                        <input type="color" id="text-color" class="form-control form-control-color" value="#333333">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="bg-color" class="form-label">Background Color</label>
+                        <input type="color" id="bg-color" class="form-control form-control-color" value="#EDDFCB">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button id="save-json" class="btn btn-primary me-2">
+                        <i class="fas fa-save me-2"></i>Save Resume
+                    </button>
+                    <input type="file" id="load-json-input" class="d-none" accept=".json">
+                    <button id="load-json" class="btn btn-secondary" onclick="document.getElementById('load-json-input').click()">
+                        <i class="fas fa-upload me-2"></i>Load Resume
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card p-4" id="resume-content">
+                    <div class="resume-header">
+                        <h1 id="print-title">AI Resume Generator | DeepSeek Integration</h1>
+                        <p contenteditable="true">123 Example Street, City, State | (555) 555-5555 | email@example.com | linkedin.com/in/profile</p>
+                    </div>
+
+                    <h2 contenteditable="true">Professional Summary</h2>
+                    <p contenteditable="true">Results-driven software engineer with 5+ years of experience in developing scalable web applications. Expertise in JavaScript, React, Node.js, and cloud technologies. Proven track record of delivering projects that improve performance by 40% and user engagement by 25%.</p>
+                    
+                    <h2 contenteditable="true">Work Experience</h2>
+                    <div class="professional-overview-entry">
+                        <h3>Senior Software Engineer</h3>
+                        <p contenteditable="true">Tech Company, City, State | 2021 - Present</p>
+                        <ul contenteditable="true">
+                            <li>Developed and maintained a high-traffic e-commerce platform using React and Node.js.</li>
+                            <li>Led a team of three junior developers, mentoring them in best practices and code reviews.</li>
+                            <li>Implemented a new caching strategy that reduced server response times by 50%.</li>
+                        </ul>
+                    </div>
+
+                    <div class="professional-overview-entry">
+                        <h3>Software Developer</h3>
+                        <p contenteditable="true">Startup Co., City, State | 2018 - 2021</p>
+                        <ul contenteditable="true">
+                            <li>Built RESTful APIs with Express.js to support mobile and web applications.</li>
+                            <li>Collaborated with the design team to create a user-friendly interface.</li>
+                        </ul>
+                    </div>
+
+                    <h2 contenteditable="true">Education</h2>
+                    <h3>Master of Science in Computer Science</h3>
+                    <p contenteditable="true">University Name | 2018</p>
+
+                    <h2 contenteditable="true">Skills</h2>
+                    <p contenteditable="true"><strong>Languages:</strong> JavaScript, Python, Java, C++<br><strong>Frameworks:</strong> React, Node.js, Express.js, Django<br><strong>Databases:</strong> MongoDB, PostgreSQL, MySQL<br><strong>Tools:</strong> Git, Docker, AWS, Heroku</p>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4 mb-5">
+                    <button class="btn btn-success me-2" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print / Download PDF
+                    </button>
+                    <button class="btn btn-primary btn-lg">
+                         <i class="fas fa-magic me-2"></i>Generate AI-Optimized Resume
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-dark text-white mt-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>AI Resume Generator</h5>
+                    <p>Leveraging artificial intelligence to create job-winning resumes tailored to your target positions.</p>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <h5>Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Home</a></li>
+                        <li><a href="#" class="text-white">Templates</a></li>
+                        <li><a href="#" class="text-white">Pricing</a></li>
+                        <li><a href="#" class="text-white">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Resume Tips</a></li>
+                        <li><a href="#" class="text-white">Cover Letters</a></li>
+                        <li><a href="#" class="text-white">Interview Prep</a></li>
+                        <li><a href="#" class="text-white">Career Advice</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Connect With Us</h5>
+                    <div class="d-flex">
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin fa-2x"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-github fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <p class="mb-0">&copy; 2023 AI Resume Generator. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end mb-3">
+                    <a href="#" class="text-white me-3">Privacy Policy</a>
+                    <a href="#" class="text-white me-3">Terms of Service</a>
+                    <a href="#" class="text-white">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption/Decryption Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+
+        .error {
+            background: #ffe8e8;
+            border-color: #ffb3b3;
+            color: #d63384;
+        }
+
+        .key-display {
+            background: #fff3cd;
+            border: 1px solid #ffd700;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            word-break: break-all;
+        }
+
+        .demo {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-left-color: #2196f3;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Encryption/Decryption Tool</h1>
+
+        <!-- Key Management Section -->
+        <div class="section">
+            <h2>🔑 Key Management</h2>
+            <div class="input-group">
+                <label for="password">Password (optional - leave empty for random key):</label>
+                <input type="password" id="password" placeholder="Enter your password">
+            </div>
+            <div class="button-group">
+                <button onclick="generateKey()">Generate New Key</button>
+                <button onclick="showKey()">Show Current Key</button>
+                <button onclick="setKey()">Set Custom Key</button>
+            </div>
+            <div id="keyDisplay" class="key-display" style="display: none;">
+                <strong>Current Key:</strong><br>
+                <span id="currentKey"></span>
+            </div>
+        </div>
+
+        <!-- Encryption Section -->
+        <div class="section">
+            <h2>🔒 Encryption</h2>
+            <div class="input-group">
+                <label for="plaintext">Text to Encrypt:</label>
+                <textarea id="plaintext" placeholder="Enter the text you want to encrypt..."></textarea>
+            </div>
+            <button onclick="encryptText()">Encrypt Text</button>
+            <div id="encryptResult" style="display: none;"></div>
+        </div>
+
+        <!-- Decryption Section -->
+        <div class="section">
+            <h2>🔓 Decryption</h2>
+            <div class="input-group">
+                <label for="ciphertext">Encrypted Text:</label>
+                <textarea id="ciphertext" placeholder="Paste the encrypted text here..."></textarea>
+            </div>
+            <button onclick="decryptText()">Decrypt Text</button>
+            <div id="decryptResult" style="display: none;"></div>
+        </div>
+
+        <!-- Demo Section -->
+        <div class="section demo">
+            <h2>🎯 Quick Demo</h2>
+            <p style="margin-bottom: 15px;">Try this demo with pre-filled data:</p>
+            <div class="button-group">
+                <button onclick="runDemo()">Run Demo</button>
+                <button onclick="clearAll()">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple encryption using built-in Web Crypto API
+        let currentKey = null;
+
+        // Generate a random key
+        async function generateRandomKey() {
+            const key = await window.crypto.subtle.generateKey(
+                {
+                    name: "AES-GCM",
+                    length: 256,
+                },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            return key;
+        }
+
+        // Derive key from password
+        async function deriveKeyFromPassword(password) {
+            const encoder = new TextEncoder();
+            const keyMaterial = await window.crypto.subtle.importKey(
+                "raw",
+                encoder.encode(password),
+                { name: "PBKDF2" },
+                false,
+                ["deriveBits", "deriveKey"]
+            );
+            
+            const salt = new Uint8Array(16); // In real implementation, use random salt
+            return await window.crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256",
+                },
+                keyMaterial,
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+        }
+
+        // Generate key based on password or random
+        async function generateKey() {
+            const password = document.getElementById('password').value;
+            
+            try {
+                if (password.trim()) {
+                    currentKey = await deriveKeyFromPassword(password);
+                    showResult('encryptResult', 'Key generated from password!', false);
+                } else {
+                    currentKey = await generateRandomKey();
+                    showResult('encryptResult', 'Random key generated!', false);
+                }
+                hideKeyDisplay();
+            } catch (error) {
+                showResult('encryptResult', 'Error generating key: ' + error.message, true);
+            }
+        }
+
+        // Show current key (exported as base64)
+        async function showKey() {
+            if (!currentKey) {
+                showResult('encryptResult', 'No key generated yet! Please generate a key first.', true);
+                return;
+            }
+
+            try {
+                const exported = await window.crypto.subtle.exportKey('raw', currentKey);
+                const keyArray = new Uint8Array(exported);
+                const keyBase64 = btoa(String.fromCharCode.apply(null, keyArray));
+                
+                document.getElementById('currentKey').textContent = keyBase64;
+                document.getElementById('keyDisplay').style.display = 'block';
+            } catch (error) {
+                showResult('encryptResult', 'Error showing key: ' + error.message, true);
+            }
+        }
+
+        // Set custom key
+        async function setKey() {
+            const keyInput = prompt('Enter your base64 encoded key:');
+            if (!keyInput) return;
+
+            try {
+                const keyData = Uint8Array.from(atob(keyInput), c => c.charCodeAt(0));
+                currentKey = await window.crypto.subtle.importKey(
+                    'raw',
+                    keyData,
+                    { name: 'AES-GCM' },
+                    true,
+                    ['encrypt', 'decrypt']
+                );
+                showResult('encryptResult', 'Custom key set successfully!', false);
+                hideKeyDisplay();
+            } catch (error) {
+                showResult('encryptResult', 'Error setting key: ' + error.message, true);
+            }
+        }
+
+        // Encrypt text
+        async function encryptText() {
+            const plaintext = document.getElementById('plaintext').value;
+            
+            if (!plaintext.trim()) {
+                showResult('encryptResult', 'Please enter text to encrypt!', true);
+                return;
+            }
+
+            if (!currentKey) {
+                await generateKey();
+            }
+
+            try {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(plaintext);
+                const iv = window.crypto.getRandomValues(new Uint8Array(12));
+                
+                const encrypted = await window.crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: iv },
+                    currentKey,
+                    data
+                );
+
+                // Combine IV and encrypted data
+                const encryptedArray = new Uint8Array(encrypted);
+                const result = new Uint8Array(iv.length + encryptedArray.length);
+                result.set(iv);
+                result.set(encryptedArray, iv.length);
+                
+                const encryptedBase64 = btoa(String.fromCharCode.apply(null, result));
+                
+                showResult('encryptResult', 
+                    `<strong>Original Text:</strong> ${plaintext}<br>
+                     <strong>Encrypted Text:</strong> ${encryptedBase64}`, 
+                    false);
+                
+                // Auto-fill decryption field
+                document.getElementById('ciphertext').value = encryptedBase64;
+                
+            } catch (error) {
+                showResult('encryptResult', 'Encryption error: ' + error.message, true);
+            }
+        }
+
+        // Decrypt text
+        async function decryptText() {
+            const ciphertext = document.getElementById('ciphertext').value;
+            
+            if (!ciphertext.trim()) {
+                showResult('decryptResult', 'Please enter encrypted text to decrypt!', true);
+                return;
+            }
+
+            if (!currentKey) {
+                showResult('decryptResult', 'No key available! Please generate a key first.', true);
+                return;
+            }
+
+            try {
+                const encryptedData = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
+                const iv = encryptedData.slice(0, 12);
+                const encrypted = encryptedData.slice(12);
+                
+                const decrypted = await window.crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: iv },
+                    currentKey,
+                    encrypted
+                );
+
+                const decoder = new TextDecoder();
+                const decryptedText = decoder.decode(decrypted);
+                
+                showResult('decryptResult', 
+                    `<strong>Encrypted Text:</strong> ${ciphertext}<br>
+                     <strong>Decrypted Text:</strong> ${decryptedText}`, 
+                    false);
+                
+            } catch (error) {
+                showResult('decryptResult', 'Decryption error: ' + error.message + ' (Check if the key is correct)', true);
+            }
+        }
+
+        // Run demo
+        async function runDemo() {
+            // Set demo password
+            document.getElementById('password').value = 'demo123';
+            await generateKey();
+            
+            // Set demo text
+            document.getElementById('plaintext').value = 'Hello! This is a secret message from the encryption demo. 🚀';
+            
+            // Encrypt the demo text
+            await encryptText();
+            
+            showResult('decryptResult', 'Demo completed! The text was encrypted and is ready for decryption. Click "Decrypt Text" to see it decrypted!', false);
+        }
+
+        // Clear all fields
+        function clearAll() {
+            document.getElementById('password').value = '';
+            document.getElementById('plaintext').value = '';
+            document.getElementById('ciphertext').value = '';
+            hideResult('encryptResult');
+            hideResult('decryptResult');
+            hideKeyDisplay();
+            currentKey = null;
+        }
+
+        // Utility functions
+        function showResult(elementId, message, isError) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = 'result ' + (isError ? 'error' : '');
+            element.style.display = 'block';
+        }
+
+        function hideResult(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        function hideKeyDisplay() {
+            document.getElementById('keyDisplay').style.display = 'none';
+        }
+
+        // Initialize with a random key
+        window.addEventListener('load', () => {
+            generateKey();
+        });
+    </script>
+</body>
+</html>

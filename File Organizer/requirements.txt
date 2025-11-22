@@ -1,0 +1,79 @@
+File Organizer Application: Project Plan & Requirements Document
+1. Project Vision & Goal
+Vision: To create an intelligent, user-friendly Windows desktop application that automates the organization of digital files by recognizing their type, content, and subject matter, thereby reducing digital clutter and improving file accessibility.
+Goal: To develop a robust and reliable tool that allows users to easily define and apply rules for sorting files into a structured folder hierarchy, with capabilities ranging from simple file extension-based sorting to advanced AI-driven content analysis.
+2. Key Features & Requirements
+2.1. Core File System Operations
+F1. Source Folder Selection: User must be able to select one or more source folders to scan for unorganized files.
+F2. Destination Folder Selection: User must be able to select a primary destination folder where organized files will be moved.
+F3. File Type Recognition (Extension-based): The application must accurately identify file types based on their extensions (e.g., .jpg, .pdf, .mp4).
+F4. File Type Recognition (MIME-type based): The application should use MIME types for more robust file identification where extensions might be ambiguous or missing.
+F5. Dynamic Folder Creation: The application must automatically create new subfolders (e.g., "Images", "Documents", "Videos") within the destination based on recognized file categories. These will form the "app-structured folders."
+F6. File Movement: The application must reliably move identified files from the source to their respective categorized folders.
+F7. Duplicate File Handling: The application must detect duplicate file names in the destination and provide a strategy (e.g., append timestamp, skip, prompt user).
+F8. Subfolder Traversal: The application should be able to scan and organize files within subfolders of the selected source directory.
+2.2. Basic Content-Based Organization
+F9. Date-Based Organization (for Media): For images and videos, the application should be able to create sub-subfolders based on the file's creation/modification date (e.g., Images/2023/2023-08).
+2.3. User Interface (GUI)
+F10. Intuitive User Interface: A clear and easy-to-navigate graphical user interface (GUI) for all operations.
+F11. Progress Display: A visual indicator (e.g., progress bar, file count) showing the progress of the organization process.
+F12. Logging & Report: Display a log of actions performed (e.g., "Moved X to Y", "Skipped Z due to error") and generate a summary report.
+F13. Dry Run/Preview Mode with Proposed Mapping: A crucial feature allowing users to see what the application would do without actually moving any files. This mode will automatically index and map all files and folders in the source, proposing their new locations within the app's structured folders, enabling user review and preventing accidental data loss.
+F14. Stop/Pause Functionality: Ability to stop or pause an ongoing organization process.
+F15. Undo Last Organization: User must be able to reverse the most recent completed file organization operation, moving files back to their original locations. This requires the application to maintain a detailed log of all moves.
+2.4. Configuration & Customization
+F16. Customizable Categories: Users should be able to define, edit, and remove file categories, including their associated extensions and MIME types.
+F17. Rule Prioritization: Users should be able to set the order in which categorization rules are applied.
+F18. Exclusion Rules: Users should be able to specify files or folders to exclude from the organization process.
+F19. Default Destination Customization: Allow users to set default destination paths for specific categories.
+2.5. Advanced Content & Subject Matter Recognition (Future Phases)
+F20. Document Keyword Search: Ability to extract text from common document types (PDF, DOCX, TXT) and organize based on user-defined keywords found within the content.
+F21. Image Metadata Extraction: Extract and use EXIF metadata from images (e.g., camera model, GPS location) for more granular organization.
+F22. Audio/Video Metadata Extraction: Extract and use metadata (e.g., artist, album, genre, title) from media files for organization.
+F23. AI-Powered Content Categorization (e.g., LLM Integration): (Highly advanced) Use machine learning models or Large Language Models (LLMs) to understand the semantic content of files (e.g., "This document is a resume," "This image contains a cat") and organize accordingly. This would involve API calls to services like Gemini.
+F24. Subject Matter Tagging: (Highly advanced) Allow users to define subject matter tags, and the app attempts to assign these tags to files based on content analysis, creating folders for these subjects.
+3. Technology Stack (Proposed)
+Programming Language: Python
+Reasoning: Excellent for scripting, rich ecosystem of libraries for file operations, GUI, and potential AI/ML integration. Cross-platform potential.
+GUI Framework:
+Tkinter (Built-in): Good for simple, quick GUIs. Comes with Python, so no extra installation.
+PyQt / PySide (Recommended for richer GUIs): More powerful and visually appealing, but requires separate installation. Offers more control over UI design.
+Kivy (for touch/modern UI): Good for more modern, touch-friendly interfaces, but might have a steeper learning curve for desktop specifics.
+File System Operations:
+os module (built-in)
+shutil module (built-in)
+mimetypes module (built-in)
+Content Analysis Libraries (for future phases):
+Pillow (PIL Fork): For basic image manipulation and EXIF data.
+exifread: For reading EXIF data specifically.
+PyPDF2 / pdfminer.six: For PDF text extraction.
+python-docx: For Word document text extraction.
+mutagen: For audio file metadata.
+moviepy / ffmpeg-python: For video metadata/basic processing.
+NLTK / spaCy: For Natural Language Processing (keyword extraction, topic modeling).
+For AI/LLM Integration: requests library for API calls to services like Google Cloud Vision API, Gemini API, etc. (requires API keys and potentially cloud service setup).
+4. Phased Approach / Roadmap
+Phase 1: Minimum Viable Product (MVP) - Core Organization
+Focus: Get the basic, reliable file organization working.
+Features: F1, F2, F3, F4, F5, F6, F7 (timestamping for duplicates), F8, F9, F10 (basic UI), F11, F12 (basic console logging).
+GUI: Start with Tkinter for rapid prototyping or directly with PyQt/PySide if a more polished look is desired early on.
+Outcome: A functional tool that can sort files into common categories and date-based media folders.
+Phase 2: Enhanced User Control, Preview, and Undo
+Focus: Improve user customization, introduce the crucial dry run/preview, and the undo functionality.
+Features: F13 (Dry Run/Preview with Proposed Mapping), F14 (Stop/Pause), F15 (Undo Last Organization), F16 (Customizable Categories), F17 (Rule Prioritization - basic), F18 (Exclusion Rules), F19 (Default Destination Customization), F20 (Document Keyword Search - simple).
+GUI: Refine the UI, add settings/configuration screens for rules and exclusions.
+Outcome: A more flexible and safer tool where users can preview actions, undo mistakes, and define their own rules for basic content-aware sorting.
+Phase 3: Advanced Intelligence & Refinement
+Focus: Integrate advanced content recognition and AI capabilities.
+Features: F21 (Image Metadata), F22 (Audio/Video Metadata), F23 (AI-Powered Content Categorization), F24 (Subject Matter Tagging), further refinement of all existing features for performance and robustness.
+GUI: Potentially integrate visual elements for AI results (e.g., displaying detected objects in images).
+Outcome: A highly intelligent file organizer capable of sophisticated, automated content and subject-based sorting.
+5. Risks & Considerations
+Data Loss: The primary risk. The dry run feature (F13) and robust error handling are critical. Always emphasize backing up data before running the tool. The "Undo" feature (F15) significantly mitigates this but adds its own complexity.
+Complexity of Undo: Implementing a reliable "Undo" requires meticulous logging of every file movement (original path, new path, timestamp) and careful handling of edge cases (e.g., original path no longer exists, new path has been modified).
+Performance: Organizing very large folders with many files can be slow. Optimizing file system operations, especially during indexing (F13) and movement, and potential multi-threading might be necessary.
+Content Recognition Accuracy: AI/ML models are not 100% accurate. Misclassifications will occur, and user feedback/correction mechanisms might be needed in later phases.
+Complexity of AI Integration: Integrating LLMs or complex ML models adds significant complexity, dependencies, and potential costs (for API usage).
+User Experience (UX): Designing an intuitive interface for complex rules, previewing actions, and providing clear feedback (including for undo) is challenging.
+Cross-Platform vs. Windows-Specific: While Python is cross-platform, if you aim for a truly "native Windows app," certain OS-specific features or GUI choices might limit future cross-platform compatibility.
+

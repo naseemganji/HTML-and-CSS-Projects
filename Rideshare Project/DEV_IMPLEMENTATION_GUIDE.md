@@ -477,18 +477,39 @@ Accounting & Asset Management:
 - **Export Options**: CSV download for all report types with formatted data
 - **Visual Analytics**: Color-coded cards, progress bars, responsive tables
 
-### Step 5.3: Tax Summary
-**Prompt**: "Create tax year summary:
-- Total business mileage
-- Total deductible expenses by category
-- Vehicle expense totals
-- Pre-filled T2125 preview
-- GST/HST calculator"
+### Step 5.3: Tax Summary ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Created comprehensive tax year summary API endpoint aggregating all tax-relevant data
+- Built tax summary page with year selector and detailed breakdown:
+  * Overview cards showing gross income, net income, total expenses, net profit
+  * Business mileage summary with breakdown by vehicle
+  * Deductible expenses by category with GST/HST amounts
+  * Vehicle expenses subset calculation
+  * Asset & CCA summary section
+- Implemented T2125 (Statement of Business Activities) preview with pre-filled values:
+  * Part 1: Business identification and fiscal period
+  * Part 3: Gross business income
+  * Part 4: Expenses breakdown by CRA line numbers (8521, 8690, 8710, etc.)
+  * Capital Cost Allowance (CCA) calculation
+  * Net income (loss) calculation
+- Created GST/HST calculator with comprehensive tracking:
+  * GST/HST collected from rideshare income
+  * Input Tax Credits (ITCs) from business expenses
+  * ITCs from platform fees paid
+  * Net tax owing or refund calculation
+  * Quarterly breakdown for filing periods
+- All calculations properly map to CRA forms and line numbers
+- Type-safe implementation with proper Prisma schema field usage
 
 **Deliverables**:
-- `/app/tax-summary/page.tsx`
-- Tax calculation logic
-- T2125 field mapping
+- ✅ `/app/api/tax-summary/route.ts` - Tax summary API with year filtering
+- ✅ `/app/tax-summary/page.tsx` - Comprehensive tax summary UI
+- ✅ T2125 preview with all expense categories and CRA line numbers
+- ✅ GST/HST calculator with quarterly breakdown
+- ✅ Business mileage and vehicle expense calculations
+- ✅ Navigation link added for easy access
 
 ---
 

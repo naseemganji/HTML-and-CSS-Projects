@@ -1,0 +1,233 @@
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #4a3a0c;
+    color: #333;
+}
+
+.container {
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 40px;
+    background-color: #eddfcb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resume-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.resume-header h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    border-bottom: none;
+}
+
+.resume-header p {
+    font-size: 1em;
+    color: #666;
+    margin-top: 0;
+}
+
+h1, h2, h3 {
+    color: #1565C0;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+h1 {
+    font-size: 2.5em;
+    border-bottom: 3px solid #1565C0;
+    padding-bottom: 10px;
+}
+
+h2 {
+    font-size: 1.8em;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 8px;
+}
+
+h3 {
+    font-size: 1.3em;
+    color: #1E88E5;
+}
+
+p, ul {
+    margin-bottom: 16px;
+}
+
+ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+a {
+    color: #1E88E5;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.contact-info {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #090707;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.contact-info h2 {
+    border-bottom: none;
+}
+
+/* New CSS to properly style headers in the Professional Overview section */
+.professional-overview-entry h3 {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+.professional-overview-entry p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+/* Bootstrap-like utility classes  --> */
+/* You could add these to your styles.css file */
+
+/* Flexbox utilities */
+.d-flex {
+  display: flex !important;
+}
+
+.flex-column {
+  flex-direction: column !important;
+}
+
+/* Sizing utilities */
+.min-vh-100 {
+  min-height: 100vh !important;
+}
+
+/* Spacing utilities */
+.mt-auto {
+  margin-top: auto !important;
+}
+
+.py-4 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+/* Text utilities */
+.text-center {
+  text-align: center !important;
+}
+
+.text-muted {
+    color: #6c757d !important; /* This is Bootstrap's default muted color */
+}
+
+/* Border utilities */
+.border-top {
+    border-top: 1px solid #dee2e6 !important; /* Bootstrap's default border color */
+}
+
+@media print {
+    @page {
+        margin: 2cm;
+
+        @top-center {
+            content: "Resume - Muhamad Naseem Ganji";
+            font-size: 1em;
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+        }
+
+        @bottom-center {
+            content: "Page " counter(page) " of " counter(pages);
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        @top-left, @top-right,
+        @bottom-left, @bottom-right {
+            content: none;
+        }
+    }
+
+    @page :first {
+        content: "Resume - Muhamad Naseem Ganji";
+        border-bottom: 1px solid #000;
+        margin-top: 0.5cm;
+        margin-right: 2cm;
+        margin-bottom: 2cm;
+        margin-left: 2cm;
+
+
+
+        @top-center {
+            content: print-title;
+            font-size: 1em;
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            padding-bottom: 4px;
+        }
+    }
+
+    #edit-controls, footer {
+        display: none;
+    }
+
+    body {
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin: 0 auto;
+        padding: 1cm;
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+    }
+
+    .resume-header {
+        margin-bottom: 1rem;
+    }
+
+    h1, h2, h3 {
+        margin-top: 1rem;
+    }
+
+    .resume-header h1 {
+        margin-top: 0;
+        margin-bottom: 0.2rem;
+        font-size: 1.8em;
+    }
+
+    .resume-header p {
+        font-size: 0.9em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    h3 {
+        font-size: 1.1em;
+    }
+}
+

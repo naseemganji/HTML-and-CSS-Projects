@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Wheel Generator</title>
+    <link href="tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h2 class="text-2xl font-bold text-gray-800">Balance Wheel Settings</h2>
+
+            <div>
+                <label for="diagramTitle" class="block text-gray-700 font-medium mb-1">Diagram Title:</label>
+                <input type="text" id="diagramTitle" value="My Personal Balance Wheel" class="focus:border-purple-500 focus:ring-purple-200">
+            </div>
+
+            <div>
+                <label for="numSpokes" class="block text-gray-700 font-medium mb-1">Number of Categories (Spokes):</label>
+                <select id="numSpokes" class="focus:border-purple-500 focus:ring-purple-200">
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8" selected>8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2 mb-4">
+                <input type="checkbox" id="useSingleColor" class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                <label for="useSingleColor" class="text-gray-700 font-medium">Use single color for all spokes</label>
+                <input type="color" id="masterColor" value="#8b5cf6" class="ml-auto" disabled>
+            </div>
+
+            <div id="categoryInputs" class="flex flex-col gap-3">
+                <!-- Dynamic category inputs will be added here by JavaScript -->
+            </div>
+
+            <button id="generateWheelBtn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg py-3 px-6 shadow-md transition transform hover:-translate-y-0.5">
+                Generate/Update Wheel
+            </button>
+
+            <button id="exportImageBtn" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg py-3 px-6 shadow-md transition transform hover:-translate-y-0.5">
+                Export Diagram as Image
+            </button>
+
+            <p id="errorMessage" class="error-message"></p>
+        </div>
+
+        <div class="canvas-section">
+            <h2 class="text-2xl font-bold text-gray-800 text-center">Your Balance Wheel</h2>
+            <canvas id="balanceWheelCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>
