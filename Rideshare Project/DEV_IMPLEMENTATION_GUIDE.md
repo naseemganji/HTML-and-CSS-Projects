@@ -154,7 +154,7 @@ Accounting & Asset Management:
 - Fixed distance input precision to accept 2 decimal places (0.01 step)
 - All API routes properly handle Next.js 15 async params
 
-**Deliverables**:
+**Deliverables***:
 - ✅ `/app/trips/page.tsx` - Trip list with filters and summary
 - ✅ `/app/trips/add/page.tsx` - Add trip form with auto-calculate distance
 - ✅ `/app/trips/edit/[id]/page.tsx` - Edit trip page
@@ -597,39 +597,142 @@ Phase 6 is now **100% complete** with all three export features implemented. Use
 
 ---
 
-## Phase 7: Subscription & Payments (Week 7)
+## Phase 7: Financial Statements & Analytics (Week 7) ✅ COMPLETED
 
-### Step 7.1: Subscription Tiers
-**Prompt**: "Implement subscription system:
-- Free tier: basic mileage, 10 expenses/month, manual entry only
-- Standard tier ($99/year): unlimited, CSV export
-- Pro tier ($199/year): unlimited, OCR, auto-tracking, priority support
-- Database schema for subscriptions
-- Feature gating logic"
+### Step 7.1: Income Statement & P&L Refresh ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
 
-**Deliverables**:
-- Subscription model in database
-- Feature access middleware
-- Pricing page
-
-### Step 7.2: Payment Integration
-**Prompt**: "Add Stripe payment integration:
-- Create Stripe customer on registration
-- Subscription checkout flow
-- Webhook handling for payment events
-- Subscription management page (upgrade/cancel)
-- Invoice history"
+**What was done**:
+- Introduced a shared income statement builder (`lib/reports/incomeStatement.ts`) that consolidates revenue, direct costs, operating expenses, depreciation, and GST/HST balances with consistent calculations.
+- Added `/app/api/reports/income-statement/route.ts` and upgraded the legacy `/app/api/reports/pl/route.ts` to use the new builder for backward compatibility.
+- Updated `/app/reports/page.tsx` with a dedicated "Income Statement (P&L)" tab that now mirrors traditional financial statements with structured tables, revenue source analysis, direct cost breakdowns, operating expense drilldowns, and GST/HST summary cards.
+- Enhanced CSV export logic so the download reflects the new statement sections and totals (gross revenue, platform fees, cost of sales, operating income, EBITDA, net income, GST balances).
 
 **Deliverables**:
-- Stripe integration
-- `/app/api/stripe/webhooks/route.ts`
-- `/app/settings/subscription/page.tsx`
+- ✅ `lib/reports/incomeStatement.ts` — shared builder + helpers
+- ✅ `/app/api/reports/income-statement/route.ts` — new endpoint
+- ✅ `/app/api/reports/pl/route.ts` — refactored to use shared builder
+- ✅ `/app/reports/page.tsx` — new Income Statement tab + UI overhaul and CSV export updates
+
+### Step 7.2: Balance Sheet Snapshot ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Created `/app/api/reports/balance-sheet/route.ts` to aggregate simplified assets, liabilities, and equity using asset book values, loan balances, lease obligations, GST/HST liabilities or recoverables, and retained earnings derived from net income.
+- Added Balance Sheet tab in `/app/reports/page.tsx` with dual-column layout (Assets vs. Liabilities & Equity), section subtotals, and automatic balance validation messaging.
+- Provides at-a-glance totals for cash, GST receivables/payables, vehicle value, accumulated depreciation, loans, lease obligations, and retained earnings.
+
+**Deliverables**:
+- ✅ `/app/api/reports/balance-sheet/route.ts` — balance sheet API
+- ✅ `/app/reports/page.tsx` — Balance Sheet tab with responsive layout and advisory banner if totals fall out of balance
+
+### Step 7.3: Financial KPI Dashboard ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Implemented `/app/api/reports/financial-kpis/route.ts` that aggregates revenue, expenses, trip counts, and asset values for any date range to compute metrics such as gross margin, operating margin, burn rate, average daily revenue, revenue per trip, expense ratio, asset turnover, run rate, and net take-home percentage.
+- Added a Financial KPIs tab in `/app/reports/page.tsx` featuring summary cards and a responsive metric grid with contextual descriptions and trend highlighting.
+
+**Deliverables**:
+- ✅ `/app/api/reports/financial-kpis/route.ts`
+- ✅ `/app/reports/page.tsx` — Financial KPI tab with metric cards
 
 ---
 
-## Phase 8: Admin & Partner Features (Week 8)
+## Phase 8: Subscription & Payments (Week 8) ✅ COMPLETED
 
-### Step 8.1: Admin Dashboard
+### Step 8.1: Subscription Tiers ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Created three-tier subscription system:
+  * **Free**: 10 expenses/month, basic mileage tracking, manual entry only
+  * **Standard ($99/year)**: Unlimited expenses, GPS tracking, CSV export, tax exports
+  * **Pro ($199/year)**: Everything + OCR scanning, asset management, financial reports
+- Built comprehensive pricing page at `/pricing` with:
+  * Feature comparison table
+  * Monthly/yearly billing toggle
+  * Upgrade call-to-actions
+  * FAQ section
+- Implemented subscription utility library (`lib/subscription.ts`):
+  * Feature access checking functions
+  * Usage limit enforcement (canAddExpense, canAddAsset)
+  * Tier comparison helpers
+  * Upgrade message generators
+- Added expense limit enforcement in API:
+  * Free tier limited to 10 expenses per month
+  * Standard/Pro have unlimited expenses
+  * Returns clear error message when limit reached
+- Created subscription settings page at `/settings/subscription`:
+  * Current plan display with feature list
+  * Usage statistics (expenses, assets this month)
+  * Plan comparison with upgrade buttons
+  * Subscription cancellation flow
+- Added subscription links to Navigation menu:
+  * "Subscription" link to settings
+  * "Upgrade Plan" link to pricing page
+
+**Deliverables**:
+- ✅ `/app/pricing/page.tsx` - Pricing and feature comparison
+- ✅ `/lib/subscription.ts` - Feature gating utility functions
+- ✅ `/app/settings/subscription/page.tsx` - Subscription management
+- ✅ `/app/api/subscription/usage/route.ts` - Usage statistics endpoint
+- ✅ `/app/api/subscription/cancel/route.ts` - Cancellation endpoint
+- ✅ Modified `/app/api/expenses/route.ts` - Enforces limits
+- ✅ Navigation menu updated with subscription links
+
+### Step 8.2: Payment Integration ✅ COMPLETED
+**Status**: ✅ **COMPLETED** (Configuration Required)
+
+**What was done**:
+- Installed Stripe SDK (`stripe` and `@stripe/stripe-js`)
+- Created Stripe configuration file (`lib/stripe.ts`):
+  * Server-side Stripe instance
+  * Price ID mapping for Standard/Pro monthly/yearly
+  * Checkout session creation helper
+  * Billing portal session helper
+- Implemented Stripe checkout endpoint (`/api/stripe/checkout`):
+  * Accepts tier (standard/pro) and interval (month/year) parameters
+  * Creates Stripe checkout session
+  * Redirects to Stripe hosted checkout page
+  * Handles success/cancel redirects
+- Built comprehensive webhook handler (`/api/stripe/webhooks`):
+  * Handles checkout.session.completed
+  * Handles customer.subscription.updated
+  * Handles customer.subscription.deleted
+  * Handles invoice.payment_succeeded
+  * Handles invoice.payment_failed
+  * Updates user subscription tier in database
+- Created comprehensive setup guide (`STRIPE_SETUP.md`):
+  * Step-by-step Stripe account configuration
+  * Product/price creation instructions
+  * Webhook setup guide
+  * Local testing with Stripe CLI
+  * Production deployment checklist
+- Updated `.env.example` with Stripe variables
+
+**Deliverables**:
+- ✅ Stripe SDK installed
+- ✅ `/lib/stripe.ts` - Stripe configuration
+- ✅ `/app/api/stripe/checkout/route.ts` - Checkout endpoint
+- ✅ `/app/api/stripe/webhooks/route.ts` - Webhook handler
+- ✅ `STRIPE_SETUP.md` - Complete setup guide
+- ✅ `.env.example` - Updated with Stripe keys
+
+**Note**: Stripe requires dashboard configuration to be fully functional:
+1. Create Stripe account
+2. Create products and prices
+3. Add API keys and price IDs to `.env`
+4. Configure webhook endpoint
+5. Test with Stripe CLI or test cards
+
+See `STRIPE_SETUP.md` for detailed instructions.
+
+---
+
+## Phase 9: Admin & Partner Features (Week 9)
+
+### Step 9.1: Admin Dashboard
 **Prompt**: "Build admin dashboard:
 - User list with search and filters
 - User details and activity
@@ -642,7 +745,7 @@ Phase 6 is now **100% complete** with all three export features implemented. Use
 - Admin middleware
 - User management APIs
 
-### Step 8.2: Partner API
+### Step 9.2: Partner API
 **Prompt**: "Implement partner API:
 - OAuth2 token endpoint
 - GET /partners/users/{id}/tax-packet
@@ -657,9 +760,9 @@ Phase 6 is now **100% complete** with all three export features implemented. Use
 
 ---
 
-## Phase 9: Polish & Launch (Week 9)
+## Phase 10: Polish & Launch (Week 10)
 
-### Step 9.1: Mobile Responsiveness
+### Step 10.1: Mobile Responsiveness
 **Prompt**: "Ensure mobile-first design:
 - Test all pages on mobile viewport
 - Optimize forms for mobile input
@@ -670,7 +773,7 @@ Phase 6 is now **100% complete** with all three export features implemented. Use
 - Mobile-optimized UI
 - Responsive components
 
-### Step 9.2: Testing & QA
+### Step 10.2: Testing & QA
 **Prompt**: "Implement testing:
 - Unit tests for utility functions
 - API route tests
@@ -682,7 +785,7 @@ Phase 6 is now **100% complete** with all three export features implemented. Use
 - Test suite (Jest, Playwright)
 - Test coverage report
 
-### Step 9.3: Deployment
+### Step 10.3: Deployment
 **Prompt**: "Deploy to production:
 - Set up Vercel project
 - Configure production database
