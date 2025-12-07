@@ -1,4 +1,5 @@
 {
-    "chat.agent.maxRequests": 100,
-    "chat.agent.enabled": true
+    "chat.agent.maxRequests": 1000,
+    "chat.agent.enabled": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

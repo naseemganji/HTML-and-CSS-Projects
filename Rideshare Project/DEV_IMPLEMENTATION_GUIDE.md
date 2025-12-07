@@ -732,18 +732,96 @@ See `STRIPE_SETUP.md` for detailed instructions.
 
 ## Phase 9: Admin & Partner Features (Week 9)
 
-### Step 9.1: Admin Dashboard
-**Prompt**: "Build admin dashboard:
-- User list with search and filters
-- User details and activity
-- Subscription management
-- Analytics: total users, MRR, churn
-- Role-based access control"
+**Status**: 🟡 In progress (posting hooks underway)
+
+### Step 9.0: Company Onboarding Flow ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Implemented comprehensive onboarding wizard for new users
+- Created CompanyProfile model to store business information
+- Built multi-step wizard with progress indicator:
+  * **Step 1: Company Information** - Business name, HST#, address, phone, business type, industry
+  * **Step 2: Chart of Accounts** - Initialize default Canadian accounts or skip
+  * **Step 3: Subscription Selection** - Choose Free, Standard, or Pro plan
+  * **Step 4: Completion** - Success message and auto-redirect
+- Added redirect logic to guide new users through onboarding on first login
+- Dashboard checks onboarding status and redirects incomplete users
+- Mobile responsive with dark mode support
+- Form validation and loading states throughout
+- Provincial dropdowns for all Canadian provinces/territories
 
 **Deliverables**:
-- `/app/admin/page.tsx`
-- Admin middleware
-- User management APIs
+- ✅ `/app/onboarding/page.tsx` - Multi-step onboarding wizard
+- ✅ `/app/api/company/profile/route.ts` - Company profile CRUD (POST/GET/PUT)
+- ✅ `/app/api/user/onboarding-status/route.ts` - Check onboarding completion status
+- ✅ `/app/api/user/complete-onboarding/route.ts` - Mark onboarding complete and set subscription
+- ✅ CompanyProfile model in Prisma schema with business details
+- ✅ User.onboardingCompleted field to track setup status
+- ✅ Migration: `20251207042803_add_company_profile_and_onboarding`
+- ✅ Dashboard redirect logic for incomplete onboarding
+- ✅ Login redirect logic to route new users to onboarding
+- ✅ `/drivego/ONBOARDING_IMPLEMENTATION.md` - Full technical documentation
+
+**Company Profile Fields**:
+- Business name, business number, HST/GST number
+- Full address (line 1, line 2, city, province, postal code, country)
+- Contact information (phone, email, website)
+- Fiscal year end, incorporation date
+- Business type (Sole Proprietorship, Partnership, Corporation, Other)
+- Industry type (Rideshare/Delivery, Transportation, Courier, Other)
+
+**User Flow**:
+1. New user registers → redirected to login
+2. User logs in → system checks onboarding status
+3. If not completed → redirected to `/onboarding`
+4. Complete 3-step wizard → marked as complete → redirected to dashboard
+5. Subsequent logins → go directly to dashboard
+
+### Step 9.1: Admin Dashboard ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Built comprehensive admin dashboard with full user management capabilities
+- Created user list page with search by email/name and filter by subscription tier
+- Implemented analytics cards showing total users, MRR, ARR, new users this month, churn rate, and user distribution by tier
+- Added user creation functionality (create new users with email, name, password, role, and subscription tier)
+- Implemented subscription tier changes (upgrade/downgrade users between free/standard/pro)
+- Implemented role changes (change user roles for access control)
+- Built RBAC system with role-based access control functions
+- Created admin API routes with proper authentication and authorization checks
+- Added pagination for user list (20 users per page)
+- Integrated admin link in navigation (visible only to admins)
+- **ENHANCED**: Added tenant column to user list showing organization affiliation
+
+**Deliverables**:
+- ✅ `/app/admin/page.tsx` - Full admin dashboard with analytics, user management, and tenant column
+- ✅ `/app/api/admin/check-role/route.ts` - Role verification endpoint
+- ✅ `/app/api/admin/stats/route.ts` - Analytics and statistics endpoint
+- ✅ `/app/api/admin/users/route.ts` - User list and creation endpoint (includes tenant data)
+- ✅ `/app/api/admin/users/[id]/tier/route.ts` - Subscription tier update endpoint
+- ✅ `/app/api/admin/users/[id]/role/route.ts` - Role update endpoint
+- ✅ `/lib/rbac.ts` - Role-based access control utilities
+- ✅ Navigation integration with requiresAdmin flag
+- ✅ Dark mode support throughout admin dashboard
+
+**Features**:
+- **Analytics Dashboard**: Total users, MRR, ARR, new users this month, churn rate, user distribution
+- **User Search**: Search by email or name
+- **Filters**: Filter by subscription tier (all/free/standard/pro)
+- **Tenant Display**: Shows which organization each user belongs to
+- **User Management**: View user details, activity counts (expenses, income, trips, vehicles)
+- **User Management**: View user details, activity counts (expenses, income, trips, vehicles)
+- **Subscription Management**: Change user subscription tiers
+- **Role Management**: Assign/change user roles for access control
+- **User Creation**: Create new users directly from admin panel
+- **Pagination**: Handle large user lists efficiently
+- **Access Control**: Only MASTER_USER and USER_ADMIN roles can access
+
+**Testing**:
+- Access admin dashboard: http://localhost:3000/admin (requires admin role)
+- Test with MASTER_USER or USER_ADMIN role
+- Verify non-admin users are redirected to dashboard
 
 ### Step 9.2: Partner API
 **Prompt**: "Implement partner API:
@@ -758,22 +836,1687 @@ See `STRIPE_SETUP.md` for detailed instructions.
 - Partner API routes
 - API docs page
 
+### Step 9.3: Double-Entry Posting Hooks ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Posting service maps all business events to balanced double-entry journal entries
+- Expense posting: Debit expense account + Debit GST paid (ITC) + Credit cash/bank
+- Income posting: Debit cash + Credit revenue + Credit tips + Debit platform fees + GST/HST tracking
+- Asset acquisition posting: Debit asset cost + Debit GST paid + Credit cash + Credit loan payable (if financed)
+- Depreciation posting: Debit depreciation expense + Credit accumulated depreciation
+- Asset disposal posting: Debit cash (proceeds) + Debit accumulated depreciation + Credit asset cost + Gain/Loss account
+- All POST/PUT/DELETE routes for expenses, income, and assets use transaction-wrapped posting
+- Idempotent updates: deleteLedgerEntries removes prior entries before re-posting
+- Backfill script created to post historical records
+- GST/HST reconciliation API and UI page
+- Test suite validates debits = credits for all transaction types
+
+**Deliverables**:
+- ✅ `/lib/posting.ts` - Posting service with all business event handlers
+- ✅ `postExpenseEntries()` - Maps expenses to journal entries
+- ✅ `postIncomeEntries()` - Maps income to journal entries with platform fee splits
+- ✅ `postAssetEntries()` - Maps asset acquisitions to journal entries
+- ✅ `postDepreciationEntries()` - Creates depreciation journal entries
+- ✅ `postAssetDisposalEntries()` - Handles asset disposals with gain/loss calculation
+- ✅ `deleteLedgerEntries()` - Removes existing entries before re-posting (idempotent)
+- ✅ `/scripts/backfill-ledger.ts` - Backfills historical data with ledger entries
+- ✅ `/app/api/reports/gst-reconciliation/route.ts` - GST/HST reconciliation API
+- ✅ `/app/reports/gst-reconciliation/page.tsx` - GST/HST reconciliation UI
+- ✅ `/__tests__/posting.test.ts` - Test suite validating balanced entries
+- ✅ `/lib/accounts/standardAccounts.ts` - Added Gain/Loss on Asset Disposal account (4300)
+- ✅ All expense/income/asset APIs use `ensureAccountsAndRun()` wrapper
+- ✅ Transaction safety: All posting happens within Prisma transactions
+- ✅ Audit trail: All ledger entries have referenceType and referenceId
+
+**GST/HST Reconciliation Features**:
+- Tracks GST collected from riders and platforms
+- Tracks GST paid on platform fees
+- Calculates Input Tax Credits (ITC) from expenses and asset purchases
+- Shows net GST position (payable or refundable)
+- Displays all GST-related ledger entries
+- Year-based filtering for reporting periods
+
+**Testing**:
+- Run tests: `npm test posting.test.ts`
+- Run backfill: `npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/backfill-ledger.ts`
+- Access GST reconciliation: `/reports/gst-reconciliation`
+
+### Step 9.4: Multi-Tenant User Management System ✅ COMPLETED
+**Status**: ✅ **COMPLETED**
+
+**What was done**:
+- Implemented comprehensive tenant-based user management system with role hierarchy
+- Created custom role management with granular permission control
+- Built tenant management for multi-organization support
+- Implemented user impersonation for support and admin purposes
+- Added inline user editing with role changes and enable/disable functionality
+- Integrated all management screens with consistent navigation and theming
+
+**Role Hierarchy**:
+- **MASTER_USER** (Platform Admin): Full system access, manage all tenants
+- **USER_ADMIN** (Organization Admin): Manage users within their tenant
+- **SUB_USER** (Standard User): Full access to their data
+- **SUB_USER_READONLY** (View-Only User): Read-only access
+- **Custom Roles**: Organization-specific roles with configurable permissions
+
+**Deliverables**:
+- ✅ `/app/user-admin/page.tsx` - User management with inline editing
+- ✅ `/app/roles/page.tsx` - Custom role management with permission matrix
+- ✅ `/app/tenants/page.tsx` - Tenant management (create, edit, delete)
+- ✅ `/app/api/user-admin/users/route.ts` - User CRUD with tenant scoping
+- ✅ `/app/api/user-admin/users/[id]/route.ts` - User updates (role, status)
+- ✅ `/app/api/user-admin/roles/route.ts` - Custom role CRUD
+- ✅ `/app/api/user-admin/roles/[id]/route.ts` - Role updates and deletion
+- ✅ `/app/api/user-admin/tenants/route.ts` - Tenant CRUD
+- ✅ `/app/api/user-admin/tenants/[id]/route.ts` - Tenant updates
+- ✅ `/app/api/user-admin/modules/route.ts` - Dynamic module discovery (15 modules)
+- ✅ `/app/api/user-admin/impersonate/route.ts` - User impersonation API
+- ✅ Prisma schema updates: Tenant, CustomRole models; User.isActive field
+- ✅ Navigation integration with Settings dropdown (requiresUserAdmin flags)
+- ✅ Impersonation UI in Navigation component with user search
+
+**User Management Features**:
+- **User List**: View all users in organization with activity counts
+- **Inline Role Editing**: Change user roles via dropdown (base roles + custom roles)
+- **Enable/Disable Users**: Toggle user account status with single click
+- **Self-Protection**: Cannot edit own account (prevents accidental lockout)
+- **Tenant Scoping**: USER_ADMIN only sees/manages users in their tenant
+- **Status Indicators**: Color-coded badges (Active/Disabled/Pending Password Change)
+- **User Creation**: Create new users with temporary passwords
+- **Activity Tracking**: Shows expense, income, vehicle, trip counts per user
+
+**Role Management Features**:
+- **Dynamic Module Discovery**: Automatically detects 15 application modules
+- **Permission Matrix**: Granular control (View, Create, Edit, Delete) per module
+- **Custom Role Creation**: Organization-specific roles with custom permissions
+- **Role Templates**: Copy and modify existing roles
+- **Active/Inactive Roles**: Disable roles without deletion
+- **Tenant Isolation**: Roles scoped to specific tenants
+- **Permission Preview**: Visual display of role capabilities
+
+**Tenant Management Features**:
+- **Tenant CRUD**: Create, edit, delete tenants (MASTER_USER only)
+- **User Count Display**: See number of users per tenant
+- **Custom Role Count**: Track roles created per tenant
+- **Cascade Protection**: Prevent deletion of tenants with users
+- **Tenant Switching**: View and manage different organizations
+- **Audit Trail**: Created/updated timestamps
+
+**User Impersonation Features**:
+- **View as User**: Admin/USER_ADMIN can view system as any user
+- **Tenant Filtering**: USER_ADMIN only sees users in their tenant
+- **User Search**: Real-time search by name or email
+- **Session Management**: Clear indication when impersonating
+- **Easy Exit**: Stop impersonation with single click
+- **Security**: Impersonation logged, cannot modify data while impersonating
+- **Role Display**: Shows user's role and tenant in impersonation modal
+
+**Database Schema Additions**:
+```prisma
+model Tenant {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  users       User[]
+  customRoles CustomRole[]
+}
+
+model CustomRole {
+  id          Int      @id @default(autoincrement())
+  tenantId    Int
+  name        String
+  description String
+  permissions Json     // Module-level permissions
+  isActive    Boolean  @default(true)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  users       User[]
+}
+
+// User model additions:
+// - tenantId: Int (foreign key to Tenant)
+// - customRoleId: Int? (optional custom role)
+// - isActive: Boolean (enable/disable account)
+```
+
+**Security & Validation**:
+- **Tenant Isolation**: USER_ADMIN cannot access other tenants' data
+- **Role Restrictions**: USER_ADMIN cannot modify other USER_ADMINs
+- **Self-Modification Prevention**: Users cannot edit their own accounts
+- **Custom Role Validation**: Ensures roles match user's tenant
+- **Permission Checks**: All API routes validate user permissions
+- **Active Status**: Disabled users cannot log in
+
+**UI/UX Enhancements**:
+- **Consistent Navigation**: All management screens have navigation panel
+- **Theme Support**: Dark/light mode across all user management pages
+- **Modal Close Buttons**: All modals have X close buttons
+- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Loading States**: Skeleton loaders and spinners during data fetch
+- **Error Handling**: Clear error messages for validation failures
+- **Confirmation Dialogs**: Confirm destructive actions (delete, disable)
+
+**Module Discovery** (15 modules detected):
+1. Dashboard - Main application dashboard
+2. Trips - Trip tracking and mileage logs
+3. Income - Revenue and earnings tracking
+4. Expenses - Expense management
+5. Accounts - Chart of accounts
+6. Ledger - General ledger entries
+7. Assets - Fixed asset management
+8. Vehicles - Vehicle management
+9. Depreciation - CCA calculations
+10. Reports - Financial reports
+11. Tax Summary - Tax preparation
+12. Settings - Application settings
+13. User Management - User administration
+14. Role Management - Custom roles
+15. Tenant Management - Organization management
+
+**Testing**:
+- User Management: http://localhost:3000/user-admin (requires USER_ADMIN or MASTER_USER)
+- Role Management: http://localhost:3000/roles (requires USER_ADMIN or MASTER_USER)
+- Tenant Management: http://localhost:3000/tenants (requires USER_ADMIN or MASTER_USER)
+- Platform Admin: http://localhost:3000/admin (requires MASTER_USER - includes tenant column)
+- Test impersonation from Navigation menu (Settings → View as User)
+- Verify USER_ADMIN can only see/manage users in their tenant
+- Confirm cannot edit own account in user management
+- Test enable/disable user functionality
+- Verify custom roles appear in role selection dropdowns
+
+### Step 9.5: Plan Configurator & Pricing Designer
+**Status**: 🚧 Not started
+**Prompt**: "Allow admin to define subscription packages (tiers, limits, features, prices) without code changes:
+- Create/edit/delete plans with feature flags and usage limits
+- Attach Stripe price IDs per interval
+- Preview pricing page output before publishing"
+
+**Deliverables**:
+- Plan model + admin UI for creating/updating plans
+- Pricing page wired to dynamic plans
+- Validation to prevent orphaned Stripe price mappings
+- Tests covering plan lifecycle and pricing rendering
+
+### Step 9.6: RBAC & Access Rights Enhancement
+**Status**: 🟢 Partially Completed (Custom roles implemented)
+**What's Done**: Custom role system with module-level permissions, tenant isolation
+**Remaining**: Middleware guards, route-level permission checks, group memberships
+
+**Deliverables**:
+- ✅ Role/permission schema (CustomRole model with JSON permissions)
+- ✅ UI to assign/revoke roles (inline editing in user management)
+- 🚧 Middleware guards for API routes (in progress)
+- 🚧 Tests for protected routes and scope enforcement
+
+---
+
+## Phase 11: Native Mobile Apps - iOS & Android (Week 11-14)
+
+### Overview: Mobile App Strategy
+
+**Decision Point**: The web app (Phase 1-10) provides a solid foundation. Now we'll build native mobile apps that share the same backend API while providing platform-specific features and optimal mobile UX.
+
+**Project Structure Decision**: Create mobile app as a **SEPARATE PROJECT** alongside the web app:
+
+```
+Rideshare Project/
+├── drivego/                    # Existing Next.js web app
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   ├── prisma/
+│   └── ...
+│
+└── drivego-mobile/             # NEW: React Native mobile app
+    ├── src/
+    │   ├── screens/
+    │   ├── components/
+    │   ├── services/
+    │   ├── navigation/
+    │   └── store/
+    ├── ios/
+    ├── android/
+    └── package.json
+```
+
+**Why Separate Projects?**
+- ✅ Different build systems (Next.js vs React Native Metro)
+- ✅ Different dependencies (prevents conflicts)
+- ✅ Independent versioning and deployments
+- ✅ Platform-specific tooling (Xcode, Android Studio)
+- ✅ Clearer separation of concerns
+- ✅ Easier team collaboration
+
+**Technology Stack**:
+- **Framework**: React Native (code sharing between iOS & Android)
+- **Alternative**: Flutter (if team prefers Dart)
+- **Backend**: Existing Next.js API routes (reuse 100%)
+- **State Management**: Redux Toolkit or Zustand
+- **Navigation**: React Navigation
+- **Authentication**: JWT tokens with secure storage
+- **Maps**: React Native Maps (Google Maps/Apple Maps)
+- **Camera**: React Native Camera or Expo Camera
+- **Storage**: AsyncStorage + SecureStore
+- **Push Notifications**: Firebase Cloud Messaging
+- **Testing**: Jest + Detox (E2E)
+
+**Why Native Mobile Apps**:
+- ✅ Better performance than PWA
+- ✅ Full access to device features (GPS, camera, background processing)
+- ✅ App Store presence & discoverability
+- ✅ Better offline capabilities
+- ✅ Platform-specific UI/UX (iOS Human Interface, Material Design)
+- ✅ Push notifications
+- ✅ Background GPS tracking for automatic trip logging
+- ✅ Native camera integration for receipt scanning
+
+**Code Reusability**:
+- Backend APIs: 100% reuse (no changes needed)
+- Business logic: 80% reuse (utility functions, calculations)
+- UI components: 60% adapt (mobile-first redesign)
+- Platform-specific: 20% (iOS/Android specific features)
+
+---
+
+### Step 11.1: React Native Project Setup
+
+**Status**: 🚧 Not started
+
+**Prompt**: 
+```
+I want to create native mobile apps (iOS & Android) for my DriveGo rideshare expense tracking application using React Native. I have a fully functional Next.js web application with a complete REST API backend.
+
+IMPORTANT: Create this as a SEPARATE project called "drivego-mobile" alongside the existing "drivego" web app. Both will share the same backend API but have independent codebases.
+
+PROJECT LOCATION:
+Create new folder at: C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile
+
+PROJECT REQUIREMENTS:
+1. Initialize a new React Native project with TypeScript
+2. Set up project structure following best practices:
+   - /src folder with /screens, /components, /services, /utils, /navigation, /store, /types
+   - Environment configuration for development, staging, production
+   - API service layer to connect to existing Next.js backend
+3. Configure both iOS and Android build environments
+4. Set up essential dependencies:
+   - Navigation: @react-navigation/native, @react-navigation/stack, @react-navigation/bottom-tabs
+   - State Management: @reduxjs/toolkit, react-redux
+   - API Client: axios with interceptors for auth tokens
+   - UI Library: react-native-paper or NativeBase for consistent components
+   - Forms: react-hook-form with validation
+   - Secure Storage: react-native-keychain for JWT tokens
+   - Date Handling: date-fns or dayjs
+5. Create base app structure with:
+   - Authentication flow (login/register screens)
+   - Main tab navigation (Dashboard, Trips, Expenses, Reports, Settings)
+   - API service configuration with base URL and auth headers
+   - Redux store setup with auth slice
+   - TypeScript interfaces for all API responses matching backend schema
+6. Implement splash screen and app icons (placeholders)
+7. Configure app name: "DriveGo" for both platforms
+
+EXISTING BACKEND API (from drivego folder):
+- Base URL: https://your-domain.com/api (or http://localhost:3000/api for dev)
+- Authentication: NextAuth with credentials provider
+- Endpoints: /api/auth, /api/trips, /api/expenses, /api/income, /api/vehicles, /api/reports, /api/tax-summary
+- All endpoints use JWT authentication via session cookies or Bearer tokens
+
+SHARED CODE STRATEGY:
+- Copy utility functions from drivego/lib/ to drivego-mobile/src/utils/ as needed
+- Examples: Haversine distance calculation, date formatters, currency formatters
+- Keep TypeScript types in sync manually or via shared types file
+
+DELIVERABLES:
+- React Native project initialized at drivego-mobile/ with Expo or React Native CLI
+- package.json with all dependencies
+- tsconfig.json for TypeScript
+- Complete folder structure with boilerplate
+- API service layer with axios configuration
+- Authentication flow with login/register screens
+- Tab navigation structure
+- Redux store setup with auth state
+- Environment configuration (.env files)
+- README with setup instructions for both iOS and Android
+
+Please provide complete code with proper TypeScript types and follow React Native best practices.
+```
+
+**Deliverables**:
+- ✅ React Native project structure
+- ✅ TypeScript configuration
+- ✅ Navigation setup
+- ✅ API service layer
+- ✅ Authentication screens
+- ✅ Redux store configuration
+- ✅ Environment setup
+
+---
+
+### Step 11.2: Authentication & User Management
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement complete authentication and user management for the DriveGo mobile app, integrating with the existing NextAuth backend.
+
+REQUIREMENTS:
+1. Create authentication screens:
+   - Login screen with email/password and "Remember Me" option
+   - Registration screen with email, name, password, password confirmation
+   - Forgot password screen with email input
+   - Password reset screen (if user receives reset link)
+2. Implement secure token storage:
+   - Use react-native-keychain to store JWT tokens securely
+   - Implement automatic token refresh logic
+   - Clear tokens on logout
+3. Create authentication service:
+   - login(email, password): Promise<User>
+   - register(userData): Promise<User>
+   - logout(): Promise<void>
+   - refreshToken(): Promise<string>
+   - getCurrentUser(): Promise<User>
+4. Implement Redux auth slice:
+   - State: user, token, isAuthenticated, loading, error
+   - Actions: loginRequest, loginSuccess, loginFailure, logout, setUser
+   - Persist auth state using redux-persist with secure storage
+5. Create auth navigation flow:
+   - Protect routes requiring authentication
+   - Auto-navigate to login if token expired
+   - Show splash screen while checking auth status
+   - Redirect to dashboard after successful login
+6. Add biometric authentication (optional):
+   - Face ID / Touch ID support for iOS
+   - Fingerprint authentication for Android
+   - "Enable Biometrics" toggle in settings
+7. Implement profile management:
+   - View/edit profile screen
+   - Change password functionality
+   - Update email/name
+8. Error handling:
+   - Display user-friendly error messages
+   - Handle network errors gracefully
+   - Show loading states during API calls
+
+BACKEND API ENDPOINTS (already implemented):
+- POST /api/register - Register new user
+- POST /api/auth/callback/credentials - Login
+- GET /api/auth/session - Get current session
+- POST /api/user/profile - Update profile
+- POST /api/user/change-password - Change password
+
+DESIGN REQUIREMENTS:
+- Follow platform design guidelines (iOS: SF Symbols, Android: Material Icons)
+- Smooth transitions and animations
+- Dark mode support
+- Accessibility (screen reader support, proper labels)
+- Input validation with clear error messages
+- Loading indicators during network requests
+
+Please provide complete implementation with TypeScript, proper error handling, and security best practices.
+```
+
+**Deliverables**:
+- ✅ Login & Registration screens
+- ✅ Secure token storage
+- ✅ Auth service layer
+- ✅ Redux auth slice
+- ✅ Protected navigation
+- ✅ Biometric authentication (optional)
+- ✅ Profile management
+
+---
+
+### Step 11.3: Trip Tracking with GPS
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement comprehensive trip tracking functionality with real-time GPS tracking, automatic mileage calculation, and background tracking for the DriveGo mobile app.
+
+REQUIREMENTS:
+1. Install and configure location services:
+   - react-native-geolocation-service for accurate location tracking
+   - react-native-background-geolocation for background tracking
+   - Request location permissions (Always/When in Use)
+   - Handle permission denials gracefully
+2. Create Trip Tracking Service:
+   - startTracking(): Start GPS tracking
+   - stopTracking(): Stop GPS tracking and save trip
+   - pauseTracking(): Pause tracking (idle detection)
+   - resumeTracking(): Resume tracking after pause
+   - getCurrentLocation(): Get current coordinates
+   - calculateDistance(coords1, coords2): Haversine distance calculation
+3. Build Trip Tracking Screen:
+   - Live map view showing current location and route polyline
+   - Real-time display of:
+     * Current speed (km/h or mph)
+     * Distance traveled (updating every second)
+     * Trip duration (HH:MM:SS)
+     * Current location address (reverse geocoding)
+   - Control buttons:
+     * Start Trip (green) - begins tracking
+     * Pause Trip (yellow) - pauses tracking
+     * End Trip (red) - stops and saves
+   - Vehicle selector dropdown
+   - Purpose toggle: Business / Personal
+   - Notes input field
+4. Implement background tracking:
+   - Continue GPS tracking when app is backgrounded
+   - Show persistent notification with trip status
+   - Battery optimization (smart location updates)
+   - Idle detection: pause after 5 minutes < 5 km/h
+   - Auto-resume when movement detected
+5. Create Trips List Screen:
+   - List of all trips with date, distance, vehicle, purpose
+   - Filters: Date range, Vehicle, Purpose (Business/Personal)
+   - Search by start/end location
+   - Summary cards: Total trips, Business miles, Personal miles
+   - Pull-to-refresh
+   - Infinite scroll pagination
+6. Build Trip Details Screen:
+   - Full trip information display
+   - Map view with route polyline
+   - Start/End locations with addresses
+   - Distance, duration, average speed
+   - Vehicle and purpose
+   - GPS waypoints (if needed for audit)
+   - Edit trip button
+   - Delete trip button (with confirmation)
+7. Create Add/Edit Trip Screen (Manual Entry):
+   - Date/Time picker
+   - Start/End location inputs with autocomplete
+   - Distance input (auto-calculate if locations provided)
+   - Vehicle selector
+   - Purpose toggle
+   - Notes textarea
+   - Odometer readings (optional)
+8. Implement offline support:
+   - Queue trips locally if no internet
+   - Sync to backend when connection restored
+   - Show sync status indicator
+9. Implement automatic trip detection (advanced):
+   - Detect when user starts driving (motion detection)
+   - Auto-start tracking with notification
+   - Smart classification: Business vs Personal based on time/location patterns
+
+BACKEND API ENDPOINTS:
+- GET /api/trips - List trips with filters
+- POST /api/trips - Create trip
+- GET /api/trips/[id] - Get trip details
+- PUT /api/trips/[id] - Update trip
+- DELETE /api/trips/[id] - Delete trip
+- GET /api/vehicles - List user vehicles
+
+DESIGN REQUIREMENTS:
+- Map theme matching app theme (dark/light)
+- Large, touch-friendly buttons for driving safety
+- Voice announcements for trip milestones (optional)
+- Haptic feedback on trip start/stop
+- Battery usage optimization
+- Background notification with trip stats
+- Permission rationale screens
+- Smooth map animations
+
+TECHNICAL CONSIDERATIONS:
+- Use React Native Maps for map display
+- Implement proper permission flows for iOS/Android
+- Handle location permission edge cases (denied, restricted, etc.)
+- Optimize location update frequency based on speed
+- Store waypoints efficiently (compress if needed)
+- Implement proper cleanup on component unmount
+- Handle app termination gracefully (save state)
+
+Please provide complete implementation with TypeScript, proper state management, error handling, and battery-efficient GPS tracking.
+```
+
+**Deliverables**:
+- ✅ GPS tracking service
+- ✅ Background location tracking
+- ✅ Live tracking screen with map
+- ✅ Trips list and details screens
+- ✅ Manual trip entry
+- ✅ Offline support with sync
+- ✅ Automatic trip detection (optional)
+
+---
+
+### Step 11.4: Expense Management & Receipt Scanning
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement comprehensive expense tracking with camera-based receipt scanning, OCR text extraction, and offline support for the DriveGo mobile app.
+
+REQUIREMENTS:
+1. Install camera and OCR dependencies:
+   - react-native-vision-camera for camera access
+   - react-native-ml-kit for OCR (Google ML Kit)
+   - react-native-image-picker for photo library access
+   - react-native-fs for file operations
+2. Create Camera Screen for Receipt Scanning:
+   - Full-screen camera view
+   - Auto-focus on receipt
+   - Flash toggle
+   - Capture button with haptic feedback
+   - Gallery button to select existing photo
+   - Crop/rotate interface after capture
+   - OCR processing indicator (loading spinner)
+   - Display extracted data with confidence scores
+3. Implement OCR Service:
+   - extractTextFromImage(imageUri): Promise<ExtractedData>
+   - Parse receipt data:
+     * Merchant name (pattern matching + ML)
+     * Date (multiple format support)
+     * Total amount (prioritize: balance, total, grand total)
+     * Tax amount (GST/HST/Sales Tax)
+     * Fuel quantity (liters/gallons) if gas station
+     * Category detection (keywords: fuel, maintenance, insurance, etc.)
+   - Handle low-quality images with retry/manual entry option
+4. Build Add Expense Screen:
+   - Camera button (primary action)
+   - Manual entry option
+   - Form fields:
+     * Date picker (default: today)
+     * Category dropdown (10 categories)
+     * Amount input (currency formatted)
+     * Tax amount input (auto-calculate from amount if possible)
+     * Fuel quantity input (conditional for Fuel category)
+     * Merchant name autocomplete
+     * Description textarea
+     * Tax deductible checkbox
+     * Vehicle selector (optional, for vehicle-specific expenses)
+   - Receipt image preview (if captured)
+   - Save and Cancel buttons
+5. Create Expenses List Screen:
+   - List of expenses with date, category icon, merchant, amount
+   - Filters:
+     * Date range picker
+     * Category filter (multi-select)
+     * Tax deductible toggle
+     * Search by merchant/description
+   - Summary cards:
+     * Total expenses
+     * Tax deductible amount
+     * Expenses by category (chart)
+   - Swipe actions: Edit, Delete
+   - Pull-to-refresh
+   - Infinite scroll pagination
+6. Build Expense Details Screen:
+   - Full expense details
+   - Receipt image (full screen on tap)
+   - Edit button
+   - Delete button (with confirmation)
+   - Share receipt via email/messaging
+   - Export single expense as PDF
+7. Implement Merchants Management:
+   - Merchant autocomplete in add expense
+   - Recently used merchants
+   - Favorite merchants
+   - Add new merchant on the fly
+8. Create Categories Configuration:
+   - 10 default categories with icons:
+     * Fuel (⛽)
+     * Maintenance (🔧)
+     * Insurance (🛡️)
+     * Parking & Tolls (🅿️)
+     * Car Wash (🧽)
+     * Licensing & Fees (📋)
+     * Phone & Internet (📱)
+     * Office Supplies (📎)
+     * Professional Services (💼)
+     * Other (📦)
+9. Implement offline support:
+   - Save expenses locally when offline
+   - Store receipt images in local cache
+   - Sync to backend when online
+   - Show sync status badge
+   - Conflict resolution (last write wins)
+10. Add bulk import feature:
+    - CSV import from email/file
+    - Map CSV columns to expense fields
+    - Preview before import
+    - Validation and error handling
+
+BACKEND API ENDPOINTS:
+- GET /api/expenses - List expenses with filters
+- POST /api/expenses - Create expense
+- GET /api/expenses/[id] - Get expense details
+- PUT /api/expenses/[id] - Update expense
+- DELETE /api/expenses/[id] - Delete expense
+- GET /api/merchants - List merchants
+- POST /api/merchants - Create merchant
+
+DESIGN REQUIREMENTS:
+- Large capture button for easy one-handed use
+- Visual feedback during OCR processing
+- Confidence indicators for extracted data (green/yellow/red)
+- Allow manual correction of OCR data
+- Receipt image compression for storage efficiency
+- Camera preview with receipt boundary detection
+- Haptic feedback on capture
+- Dark mode support for camera screen
+- Accessibility (VoiceOver/TalkBack support)
+
+TECHNICAL CONSIDERATIONS:
+- Request camera permissions properly (iOS/Android)
+- Handle camera not available scenarios
+- Optimize OCR for low-end devices
+- Compress images before upload (< 2MB)
+- Implement proper error handling for camera failures
+- Use native image picker for gallery access
+- Cache recent merchants for fast autocomplete
+- Implement proper memory management for images
+- Handle orientation changes during camera use
+
+Please provide complete implementation with TypeScript, proper camera handling, efficient OCR processing, and offline-first architecture.
+```
+
+**Deliverables**:
+- ✅ Camera-based receipt scanning
+- ✅ OCR text extraction service
+- ✅ Add expense screen with form
+- ✅ Expenses list with filters
+- ✅ Expense details screen
+- ✅ Offline support with sync
+- ✅ Merchant management
+
+---
+
+### Step 11.5: Income & Vehicle Management
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement income tracking and vehicle management features for the DriveGo mobile app, allowing users to record rideshare earnings and manage their vehicle fleet.
+
+REQUIREMENTS:
+
+INCOME MANAGEMENT:
+1. Create Add Income Screen:
+   - Platform selector (Uber, Lyft, DoorDash, custom)
+   - Date/Period picker (single day or week/month summary)
+   - Earnings breakdown:
+     * Gross earnings input
+     * Fares input
+     * Tips input
+     * Bonuses input
+     * Tolls reimbursement input
+     * Other income input
+   - Platform fees breakdown:
+     * Service fee input
+     * Booking fee input
+     * Regulatory fee input
+     * Airport fee input
+     * Split fee input
+     * Other fees input
+   - GST/HST section:
+     * GST collected from riders input
+     * GST collected from platform input
+     * GST paid on platform fees input
+   - Trip statistics:
+     * Number of trips input
+     * Total distance input
+     * Online hours input
+   - Notes textarea
+   - Auto-calculate net earnings (gross - fees)
+   - Save button with validation
+2. Create Income List Screen:
+   - List of income entries with date, platform logo, net earnings
+   - Filters:
+     * Date range picker
+     * Platform filter (multi-select)
+     * Search by description
+   - Summary cards:
+     * Gross earnings
+     * Total fees
+     * Net earnings
+     * GST/HST collected
+     * Breakdown by platform (chart)
+   - Swipe actions: Edit, Delete
+   - Pull-to-refresh
+   - Export option (CSV)
+3. Build Income Details Screen:
+   - Full breakdown of earnings and fees
+   - Platform logo and name
+   - Edit and Delete buttons
+   - Share income summary
+4. Implement Platform Management:
+   - Add custom platforms
+   - Set default platform
+   - Platform logos/icons
+   - Recent platforms quick access
+
+VEHICLE MANAGEMENT:
+1. Create Vehicles List Screen:
+   - List of user vehicles with:
+     * Photo (placeholder if not added)
+     * Make, Model, Year
+     * License plate
+     * Current odometer reading
+     * Status badge (Active/Inactive)
+   - Add Vehicle button (FAB)
+   - Tap to view details
+   - Set primary vehicle indicator
+2. Build Add/Edit Vehicle Screen:
+   - Vehicle photo capture/upload
+   - Make input (autocomplete with popular makes)
+   - Model input (autocomplete based on make)
+   - Year picker (1990-current year)
+   - License plate input
+   - VIN input (optional)
+   - Starting odometer reading input
+   - Current odometer reading input
+   - Color picker
+   - Purchase date picker
+   - Purchase price input (optional, for asset tracking)
+   - Vehicle type: Personal / Business / Both
+   - Notes textarea
+   - Active/Inactive toggle
+   - Save button with validation
+3. Create Vehicle Details Screen:
+   - Vehicle photo (large)
+   - All vehicle information display
+   - Edit button
+   - Delete button (with confirmation - check for linked trips/expenses)
+   - Usage statistics:
+     * Total trips
+     * Total mileage
+     * Total fuel expenses
+     * Total maintenance expenses
+   - Recent trips list
+   - Recent expenses list
+   - Set as primary vehicle button
+4. Implement vehicle-specific features:
+   - Link trips to vehicles
+   - Link expenses to vehicles
+   - Calculate per-vehicle profitability
+   - Maintenance reminders (optional)
+   - Fuel efficiency tracking (optional)
+5. Create Vehicle Comparison View:
+   - Side-by-side comparison of vehicles
+   - Metrics: Total mileage, expenses, trips, profit
+   - Charts for visual comparison
+
+BACKEND API ENDPOINTS:
+- GET /api/income - List income entries
+- POST /api/income - Create income
+- GET /api/income/[id] - Get income details
+- PUT /api/income/[id] - Update income
+- DELETE /api/income/[id] - Delete income
+- GET /api/vehicles - List vehicles
+- POST /api/vehicles - Create vehicle
+- GET /api/vehicles/[id] - Get vehicle details
+- PUT /api/vehicles/[id] - Update vehicle
+- DELETE /api/vehicles/[id] - Delete vehicle
+
+DESIGN REQUIREMENTS:
+- Income: Green-themed for revenue
+- Vehicles: Car icons and branded colors
+- Large touch targets for inputs
+- Smart defaults (platform from last entry, current date)
+- Auto-save drafts
+- Confirmation dialogs for deletions
+- Loading states during API calls
+- Success/error toast messages
+- Dark mode support
+- Smooth animations
+
+TECHNICAL CONSIDERATIONS:
+- Form validation with clear error messages
+- Currency formatting based on locale
+- Date formatting based on locale
+- Autocomplete with debouncing
+- Image compression for vehicle photos
+- Cascade checks before vehicle deletion
+- Proper state management (Redux)
+- Offline support for income/vehicle creation
+- Sync queue for offline entries
+
+Please provide complete implementation with TypeScript, proper form validation, and efficient state management.
+```
+
+**Deliverables**:
+- ✅ Income entry screens
+- ✅ Income list with filters
+- ✅ Platform management
+- ✅ Vehicle CRUD screens
+- ✅ Vehicle details with stats
+- ✅ Vehicle comparison view
+
+---
+
+### Step 11.6: Reports & Analytics Dashboard
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement comprehensive reports and analytics dashboard for the DriveGo mobile app, providing visual insights into business performance with charts, graphs, and exportable reports.
+
+REQUIREMENTS:
+1. Install charting library:
+   - react-native-chart-kit or victory-native for charts
+   - react-native-svg for custom visualizations
+2. Create Dashboard Screen:
+   - Current month summary cards:
+     * Total income (with trend indicator)
+     * Total expenses (with trend indicator)
+     * Net profit (color-coded: green/red)
+     * Business mileage (with trip count)
+   - Year-to-date summary section
+   - Quick charts:
+     * Monthly income trend (6 months line chart)
+     * Expenses by category (pie chart)
+     * Income vs Expenses (bar chart)
+   - Quick actions:
+     * Add Trip button
+     * Add Expense button
+     * Add Income button
+     * Scan Receipt button
+   - Recent activity feed:
+     * Last 5 trips
+     * Last 5 expenses
+     * Last 5 income entries
+   - Refresh indicator (pull-to-refresh)
+3. Build Reports Screen with tabs:
+   - **Mileage Report Tab**:
+     * Date range selector
+     * Vehicle filter (multi-select)
+     * Summary cards: Total trips, Business miles, Personal miles
+     * Trip list with details
+     * Export to CSV/PDF
+     * Visual breakdown: Business vs Personal (pie chart)
+   - **Expense Report Tab**:
+     * Date range selector
+     * Category filter (multi-select)
+     * Tax deductible filter
+     * Summary cards: Total expenses, Tax deductible, Top category
+     * Expense list with details
+     * Category breakdown (bar chart)
+     * Export to CSV/PDF
+   - **Income Report Tab**:
+     * Date range selector
+     * Platform filter (multi-select)
+     * Summary cards: Gross, Fees, Net earnings
+     * Income list with details
+     * Platform breakdown (pie chart)
+     * Export to CSV/PDF
+   - **Profit & Loss Tab**:
+     * Date range selector
+     * Income section: By source with amounts
+     * Expense section: By category with amounts
+     * Net profit calculation
+     * Profit margin percentage
+     * GST/HST summary
+     * Export to CSV/PDF
+4. Create Tax Summary Screen:
+   - Year selector (current and past years)
+   - Overview cards:
+     * Gross income
+     * Total expenses
+     * Net income
+     * GST/HST owing/refund
+   - Sections:
+     * Business mileage summary (by vehicle)
+     * Deductible expenses (by category with CRA line numbers)
+     * Income breakdown (by source)
+     * GST/HST reconciliation (collected, paid, net)
+   - T2125 preview (read-only summary)
+   - Export buttons:
+     * Download T2125 CSV
+     * Download GST/HST Return
+     * Download Tax Packet ZIP
+5. Implement Financial KPIs Screen:
+   - Date range selector
+   - KPI cards:
+     * Gross Margin (%)
+     * Operating Margin (%)
+     * Profit Margin (%)
+     * Average Revenue Per Trip
+     * Average Expense Per Trip
+     * Burn Rate (monthly)
+     * Revenue Growth Rate (%)
+     * Expense Ratio (%)
+     * Asset Turnover
+     * Net Take-Home (%)
+   - Trend indicators (up/down arrows, colors)
+   - Comparison with previous period
+   - Charts for visualization
+6. Create Trial Balance Screen:
+   - Date selector
+   - Account list grouped by type:
+     * Assets
+     * Liabilities
+     * Equity
+     * Revenue
+     * Expenses
+   - Debit/Credit columns
+   - Total debits and credits
+   - Balance validation indicator
+   - Export to CSV
+7. Build Income Statement Screen:
+   - Date range selector
+   - Sections:
+     * Revenue (by source)
+     * Cost of Sales (platform fees)
+     * Gross Profit
+     * Operating Expenses (by category)
+     * EBITDA
+     * Depreciation
+     * Net Income
+   - Export to PDF
+8. Implement export functionality:
+   - CSV export for all reports
+   - PDF export with branding
+   - Email reports directly
+   - Save to device
+   - Share via messaging apps
+
+BACKEND API ENDPOINTS:
+- GET /api/dashboard/stats - Dashboard statistics
+- GET /api/reports/mileage - Mileage report
+- GET /api/reports/expenses - Expense report
+- GET /api/reports/income - Income report (if separate from /api/income)
+- GET /api/reports/pl - P&L report
+- GET /api/tax-summary?year=2024 - Tax summary
+- GET /api/reports/trial-balance - Trial balance
+- GET /api/reports/income-statement - Income statement
+- GET /api/reports/financial-kpis - Financial KPIs
+- GET /api/export/t2125?year=2024 - T2125 CSV
+- GET /api/export/gst-hst?period=2024-Q1 - GST/HST return
+- GET /api/export/tax-packet?year=2024 - Tax packet ZIP
+
+DESIGN REQUIREMENTS:
+- Charts with smooth animations
+- Color-coded data (green for income, red for expenses)
+- Interactive charts (tap for details)
+- Responsive date range pickers
+- Loading skeletons for charts
+- Empty states with illustrations
+- Filter chips for quick access
+- Horizontal scroll for chart legends if needed
+- Dark mode support for all charts
+- Print-friendly layouts for exports
+
+TECHNICAL CONSIDERATIONS:
+- Cache chart data to avoid re-rendering
+- Optimize large datasets (pagination, virtualization)
+- Date range validation (end >= start)
+- Handle zero data gracefully
+- Format currency based on locale
+- Format dates based on locale
+- Implement proper error boundaries
+- Show loading states during data fetch
+- Handle API errors with retry option
+- Efficient chart rendering (avoid re-renders)
+
+Please provide complete implementation with TypeScript, interactive charts, proper data visualization, and export functionality.
+```
+
+**Deliverables**:
+- ✅ Dashboard with summary cards
+- ✅ Reports screen with multiple tabs
+- ✅ Tax summary screen
+- ✅ Financial KPIs dashboard
+- ✅ Trial balance screen
+- ✅ Income statement
+- ✅ Export functionality (CSV/PDF)
+
+---
+
+### Step 11.7: Settings & Profile Management
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement comprehensive settings and profile management screens for the DriveGo mobile app, including app preferences, account settings, subscription management, and support features.
+
+REQUIREMENTS:
+1. Create Main Settings Screen:
+   - Profile section:
+     * Avatar (tap to change photo)
+     * Name and email
+     * View/Edit profile button
+   - Account Settings group:
+     * Change Password
+     * Email Preferences
+     * Notification Settings
+     * Biometric Authentication toggle
+     * Auto-sync toggle
+   - App Preferences group:
+     * Theme: Light / Dark / System
+     * Language selector
+     * Currency selector
+     * Distance Unit: Kilometers / Miles
+     * Date Format: MM/DD/YYYY / DD/MM/YYYY
+     * First Day of Week: Sunday / Monday
+   - Data Management group:
+     * Offline Data Storage (show used space)
+     * Clear Cache
+     * Export All Data
+     * Sync Now button (with last sync time)
+   - Subscription group:
+     * Current Plan display
+     * Usage statistics
+     * Upgrade Plan button
+     * Manage Subscription
+   - Support & About group:
+     * Help Center
+     * Contact Support
+     * FAQs
+     * Privacy Policy
+     * Terms of Service
+     * About App (version, build number)
+   - Logout button (with confirmation)
+2. Build Profile Edit Screen:
+   - Avatar upload/change (camera or gallery)
+   - Name input
+   - Email input (read-only, change requires verification)
+   - Phone number input
+   - Business name input
+   - Tax ID / HST number input
+   - Address fields (optional)
+   - Save changes button
+   - Cancel button
+3. Create Change Password Screen:
+   - Current password input
+   - New password input (with strength indicator)
+   - Confirm new password input
+   - Password requirements display
+   - Save button
+   - Validation messages
+4. Build Notification Settings Screen:
+   - Enable/disable notifications toggle
+   - Notification categories:
+     * Trip reminders
+     * Expense reminders
+     * Income reminders
+     * Tax deadlines
+     * Sync notifications
+     * Marketing emails
+   - Quiet hours: Start time / End time
+   - Save preferences
+5. Create Subscription Management Screen:
+   - Current plan card:
+     * Plan name and price
+     * Features list
+     * Renewal date
+     * Payment method
+   - Usage statistics:
+     * Expenses this month
+     * Assets count
+     * Storage used
+   - Plan comparison table (Free vs Standard vs Pro)
+   - Upgrade/Change plan buttons
+   - Cancel subscription button
+   - Billing history list
+6. Build Help Center Screen:
+   - Search bar for help articles
+   - Categories:
+     * Getting Started
+     * Trip Tracking
+     * Expense Management
+     * Reports & Taxes
+     * Troubleshooting
+   - Popular articles list
+   - Contact support button
+7. Create Contact Support Screen:
+   - Issue category selector
+   - Subject input
+   - Description textarea
+   - Attach screenshots option
+   - Send button
+   - Previous support tickets list
+8. Implement Data Management:
+   - Calculate offline storage usage
+   - Clear cache confirmation dialog
+   - Export data functionality (ZIP with CSV files)
+   - Force sync button
+   - Show sync status and last sync time
+9. Add About Screen:
+   - App logo
+   - App version and build number
+   - Copyright information
+   - Open source licenses
+   - Links to website, social media
+   - Rate app button (link to App Store/Play Store)
+   - Share app button
+10. Implement Account Deletion:
+    - Delete account option (buried in settings)
+    - Warning screen with consequences
+    - Confirmation with password
+    - Feedback form (optional)
+    - API call to delete account
+    - Logout and clear local data
+
+BACKEND API ENDPOINTS:
+- GET /api/user/profile - Get user profile
+- PATCH /api/user/profile - Update profile
+- POST /api/user/change-password - Change password
+- GET /api/subscription/current - Get current subscription
+- POST /api/subscription/cancel - Cancel subscription
+- GET /api/subscription/usage - Get usage statistics
+- POST /api/support/ticket - Create support ticket
+- DELETE /api/user/account - Delete user account
+
+DESIGN REQUIREMENTS:
+- Grouped settings with section headers
+- Icons for each setting item
+- Toggle switches for boolean settings
+- Chevron indicators for navigation items
+- Destructive actions in red (delete, logout)
+- Confirmation dialogs for important actions
+- Loading states during API calls
+- Success/error toast messages
+- Dark mode support
+- Accessibility (proper labels, contrast)
+
+TECHNICAL CONSIDERATIONS:
+- Persist app preferences locally (AsyncStorage)
+- Secure password storage
+- Validate inputs before API calls
+- Handle network errors gracefully
+- Cache profile data
+- Implement proper logout (clear tokens, Redux state, local storage)
+- Check subscription status before feature access
+- Implement proper deep linking for support articles
+- Handle app updates (show "Update Available" banner)
+- Implement crash reporting (optional: Sentry)
+
+Please provide complete implementation with TypeScript, proper form validation, and secure data handling.
+```
+
+**Deliverables**:
+- ✅ Main settings screen
+- ✅ Profile edit screen
+- ✅ Change password screen
+- ✅ Notification settings
+- ✅ Subscription management
+- ✅ Help center & support
+- ✅ Data management
+- ✅ About screen
+- ✅ Account deletion
+
+---
+
+### Step 11.8: Push Notifications & Background Services
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement push notifications, background services, and app lifecycle management for the DriveGo mobile app to enhance user engagement and provide timely reminders.
+
+REQUIREMENTS:
+1. Set up Firebase Cloud Messaging (FCM):
+   - Install @react-native-firebase/app and @react-native-firebase/messaging
+   - Configure iOS APNs certificates
+   - Configure Android google-services.json
+   - Request notification permissions
+   - Handle permission states (granted, denied, provisional)
+2. Implement notification service:
+   - registerForPushNotifications(): Get FCM token
+   - saveFCMTokenToBackend(token): Store token in database
+   - handleNotificationReceived(notification): Process incoming notifications
+   - handleNotificationOpened(notification): Navigate to relevant screen
+   - scheduleLocalNotification(data): Schedule local notifications
+   - cancelNotification(id): Cancel scheduled notification
+3. Create notification types:
+   - **Trip Reminders**:
+     * "Start tracking your trip?" (when motion detected)
+     * "Don't forget to end your trip" (if tracking > 8 hours)
+   - **Expense Reminders**:
+     * "Log today's expenses" (daily reminder at 8 PM)
+     * "You have 3 unsynced expenses" (if offline expenses exist)
+   - **Income Reminders**:
+     * "Record this week's earnings" (weekly reminder)
+   - **Tax Deadlines**:
+     * "GST/HST return due in 7 days"
+     * "T2125 deadline approaching"
+   - **Sync Notifications**:
+     * "Data synced successfully"
+     * "Sync failed, retrying..."
+   - **Achievement Notifications**:
+     * "You've driven 1,000 business miles this month!"
+4. Implement notification handlers:
+   - Foreground: Show in-app banner
+   - Background: Display system notification
+   - Notification tap: Navigate to relevant screen with deep linking
+   - Action buttons: Quick actions from notification (e.g., "Add Expense")
+5. Create notification preferences:
+   - Enable/disable per category
+   - Set quiet hours (no notifications during sleep)
+   - Notification sound selection
+   - Vibration toggle
+   - Badge count management
+6. Implement background tasks:
+   - Periodic data sync (every 15 minutes when online)
+   - Auto-backup to cloud (nightly)
+   - Background GPS tracking (if trip active)
+   - Battery optimization strategies
+   - Task cancellation on app termination
+7. Set up deep linking:
+   - Configure URL schemes (drivego://)
+   - Handle universal links (https://drivego.app/...)
+   - Parse deep link parameters
+   - Navigate to screens with context:
+     * drivego://trips/123 → Trip details
+     * drivego://expenses/add → Add expense
+     * drivego://reports/tax → Tax summary
+8. Implement app lifecycle management:
+   - App foreground: Resume sync, refresh data
+   - App background: Pause non-critical tasks
+   - App terminated: Save state, schedule background tasks
+   - Handle app updates: Show changelog
+9. Create in-app notification center:
+   - Notification list screen
+   - Unread count badge
+   - Mark as read/unread
+   - Clear all notifications
+   - Notification categories filter
+10. Add reminder scheduling:
+    - Schedule daily expense reminder
+    - Schedule weekly income reminder
+    - Schedule tax deadline reminders
+    - Schedule sync failure retries
+
+BACKEND API ENDPOINTS:
+- POST /api/notifications/register - Register FCM token
+- DELETE /api/notifications/unregister - Remove FCM token
+- GET /api/notifications/preferences - Get notification preferences
+- PUT /api/notifications/preferences - Update preferences
+- POST /api/notifications/send - Send push notification (admin only)
+
+DESIGN REQUIREMENTS:
+- Rich notifications with images/icons
+- Notification categories with colors
+- Sound/vibration patterns per category
+- Badges on app icon (iOS) and in-app
+- Custom notification layouts (Android)
+- Interactive notifications with actions
+- Quiet hours respect
+- Dark mode notification styles
+
+TECHNICAL CONSIDERATIONS:
+- Handle iOS notification permissions properly
+- Request permission at appropriate time (not on app launch)
+- Handle Android notification channels
+- Implement proper token refresh logic
+- Store FCM token securely
+- Handle notification token changes
+- Implement exponential backoff for failed syncs
+- Optimize battery usage for background tasks
+- Test notifications on both platforms
+- Handle notification limits (iOS: 64, Android: none)
+- Implement proper error handling
+- Log notification events for debugging
+
+TESTING CHECKLIST:
+- [ ] Notifications received when app is foreground
+- [ ] Notifications received when app is background
+- [ ] Notifications received when app is terminated
+- [ ] Notification tap navigates correctly
+- [ ] Action buttons work correctly
+- [ ] Quiet hours respected
+- [ ] Badge count updates correctly
+- [ ] Deep links work from notifications
+- [ ] Permission flow works on both platforms
+- [ ] Background tasks execute correctly
+
+Please provide complete implementation with TypeScript, proper permission handling, and battery-efficient background processing.
+```
+
+**Deliverables**:
+- ✅ Push notification setup (FCM)
+- ✅ Notification handlers
+- ✅ Background services
+- ✅ Deep linking
+- ✅ App lifecycle management
+- ✅ In-app notification center
+- ✅ Reminder scheduling
+
+---
+
+### Step 11.9: Testing, Optimization & Deployment
+
+**Status**: 🚧 Not started
+
+**Prompt**:
+```
+Implement comprehensive testing, performance optimization, and production deployment for the DriveGo mobile apps (iOS & Android).
+
+REQUIREMENTS:
+
+TESTING:
+1. Set up testing framework:
+   - Jest for unit tests
+   - React Native Testing Library for component tests
+   - Detox for E2E tests
+   - Configure test environments
+2. Write unit tests:
+   - API service layer (auth, trips, expenses, etc.)
+   - Utility functions (distance calculation, date formatting, currency)
+   - Redux reducers and actions
+   - Form validation logic
+   - OCR text extraction logic
+   - Coverage target: 80%+
+3. Write component tests:
+   - Test rendering with different props
+   - Test user interactions (button presses, input changes)
+   - Test navigation flows
+   - Test error states
+   - Test loading states
+4. Write E2E tests:
+   - User registration flow
+   - Login/logout flow
+   - Create trip with GPS tracking
+   - Add expense with receipt scanning
+   - View and filter reports
+   - Change user settings
+   - Run on both iOS and Android simulators
+5. Implement error tracking:
+   - Install Sentry or similar
+   - Configure error boundaries
+   - Track JS errors
+   - Track native crashes
+   - Set up alerts for critical errors
+
+PERFORMANCE OPTIMIZATION:
+1. Optimize app performance:
+   - Use React.memo for expensive components
+   - Implement FlatList optimization (getItemLayout, keyExtractor)
+   - Lazy load screens with React.lazy
+   - Optimize images (compress, cache, progressive loading)
+   - Use native driver for animations
+   - Profile with React DevTools and Flipper
+2. Optimize bundle size:
+   - Remove unused dependencies
+   - Use Hermes JavaScript engine
+   - Enable ProGuard (Android)
+   - Enable bitcode (iOS)
+   - Analyze bundle with react-native-bundle-visualizer
+3. Optimize network requests:
+   - Implement request caching
+   - Use pagination for lists
+   - Implement request debouncing
+   - Compress API responses (gzip)
+   - Optimize image uploads (resize before upload)
+4. Optimize storage:
+   - Clean up old cache periodically
+   - Limit local database size
+   - Compress stored images
+   - Remove orphaned data
+5. Battery optimization:
+   - Optimize GPS tracking frequency
+   - Use geofencing instead of continuous tracking
+   - Reduce background sync frequency
+   - Batch network requests
+   - Profile battery usage
+
+SECURITY:
+1. Implement security best practices:
+   - Secure token storage (Keychain/Keystore)
+   - Enable SSL pinning
+   - Obfuscate code (ProGuard, minification)
+   - Validate all inputs
+   - Sanitize user data
+   - Implement rate limiting
+2. Add security checks:
+   - Detect jailbreak/root
+   - Prevent screenshots on sensitive screens
+   - Implement biometric authentication timeout
+   - Log suspicious activity
+3. Code signing:
+   - Set up iOS provisioning profiles
+   - Configure Android keystore
+   - Implement automatic code signing
+
+BUILD & DEPLOYMENT:
+1. iOS App Store deployment:
+   - Create App Store Connect account
+   - Set up app metadata (name, description, keywords, screenshots)
+   - Configure app privacy details
+   - Set up IAP (if subscription via app)
+   - Create provisioning profiles
+   - Build archive in Xcode
+   - Upload to TestFlight for beta testing
+   - Submit for App Store review
+   - Prepare marketing materials
+2. Android Play Store deployment:
+   - Create Google Play Console account
+   - Set up app listing (name, description, screenshots)
+   - Configure app content rating
+   - Create release APK/AAB
+   - Upload to internal track for testing
+   - Move to beta/production track
+   - Submit for review
+   - Prepare marketing materials
+3. Set up CI/CD:
+   - Configure Fastlane for automated builds
+   - Set up GitHub Actions or similar:
+     * Run tests on push
+     * Build release on tag
+     * Auto-deploy to TestFlight/Play Store beta
+   - Implement version bumping automation
+   - Set up changelog generation
+4. Configure app analytics:
+   - Install Firebase Analytics or Mixpanel
+   - Track key user actions:
+     * App opens
+     * Trip created
+     * Expense added
+     * Report viewed
+     * Subscription upgraded
+   - Set up conversion funnels
+   - Track retention metrics
+   - Monitor crash-free rate
+5. Prepare for launch:
+   - Create app icons (all sizes)
+   - Create splash screens
+   - Prepare screenshots (all device sizes)
+   - Write app descriptions
+   - Create promotional graphics
+   - Set up app website/landing page
+   - Prepare press kit
+   - Plan launch marketing campaign
+
+BETA TESTING:
+1. TestFlight setup (iOS):
+   - Add internal testers (team)
+   - Add external testers (users)
+   - Configure test information
+   - Distribute builds
+   - Collect feedback
+2. Play Console Internal Testing (Android):
+   - Create internal testing track
+   - Add internal testers
+   - Distribute builds
+   - Collect feedback
+3. Feedback collection:
+   - In-app feedback form
+   - Bug reporting mechanism
+   - User surveys
+   - Analytics review
+   - Crash reports analysis
+
+POST-LAUNCH:
+1. Monitor app health:
+   - Track crash rate
+   - Monitor API error rates
+   - Review user reviews
+   - Track performance metrics
+   - Monitor user retention
+2. Implement updates:
+   - Fix critical bugs immediately
+   - Plan feature updates
+   - Respond to user feedback
+   - A/B test new features
+   - Regular dependency updates
+
+DELIVERABLES:
+- ✅ Complete test suite (unit, component, E2E)
+- ✅ Error tracking setup
+- ✅ Performance optimizations applied
+- ✅ Security measures implemented
+- ✅ iOS App Store listing and submission
+- ✅ Android Play Store listing and submission
+- ✅ CI/CD pipeline configured
+- ✅ Analytics tracking implemented
+- ✅ Beta testing completed
+- ✅ Launch materials prepared
+
+Please provide complete testing setup, optimization strategies, deployment scripts, and production readiness checklist.
+```
+
+**Deliverables**:
+- ✅ Test suite (unit, component, E2E)
+- ✅ Error tracking
+- ✅ Performance optimizations
+- ✅ Security hardening
+- ✅ iOS deployment
+- ✅ Android deployment
+- ✅ CI/CD pipeline
+- ✅ Analytics setup
+- ✅ Beta testing
+
+---
+
+## Phase 11 Summary
+
+**Timeline**: 4 weeks (11-14) for MVP mobile app
+
+**Week 11**: Project setup, authentication, trip tracking
+**Week 12**: Expense management, income & vehicles
+**Week 13**: Reports, settings, notifications
+**Week 14**: Testing, optimization, deployment
+
+**Milestones**:
+- Week 11 End: Users can log in and track trips
+- Week 12 End: Users can manage expenses and income
+- Week 13 End: Users can view reports and configure settings
+- Week 14 End: Apps published on App Store and Play Store
+
+**Post-Launch Roadmap**:
+1. **Phase 11.5**: Widget support (iOS 14+, Android 12+)
+2. **Phase 11.6**: Apple Watch & Wear OS apps
+3. **Phase 11.7**: Siri Shortcuts & Google Assistant actions
+4. **Phase 11.8**: CarPlay integration for safer trip tracking
+5. **Phase 11.9**: Tablet optimization (iPad, Android tablets)
+6. **Phase 11.10**: Advanced AI features (expense categorization, fraud detection)
+
+**Success Metrics**:
+- 1,000+ downloads in first month
+- 4.0+ star rating on both stores
+- 60%+ Day 7 retention rate
+- <2% crash rate
+- Average session duration: 5+ minutes
+
+---
+
+## Quick Reference: Mobile Development Commands
+
+### Initial Setup
+```powershell
+# Navigate to parent folder
+cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project"
+
+# Option 1: Create with Expo (Recommended for beginners)
+npx create-expo-app drivego-mobile --template
+
+# Option 2: Create with React Native CLI (More control)
+npx react-native init DriveGoMobile --template react-native-template-typescript
+cd DriveGoMobile
+# Then rename folder to drivego-mobile
+```
+
+### React Native CLI
+```powershell
+# Navigate to mobile project
+cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile"
+
+# Run on iOS
+npx react-native run-ios
+
+# Run on Android
+npx react-native run-android
+
+# Start Metro bundler
+npx react-native start
+
+# Clear cache
+npx react-native start --reset-cache
+```
+
+### Expo CLI (Alternative)
+```powershell
+# Navigate to mobile project
+cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile"
+
+# Start development server
+npx expo start
+
+# Build iOS
+eas build --platform ios
+
+# Build Android
+eas build --platform android
+```
+
+### Testing
+```powershell
+# Run unit tests
+npm test
+
+# Run E2E tests
+detox build -c ios.sim.debug
+detox test -c ios.sim.debug
+
+# Generate coverage
+npm test -- --coverage
+```
+
+### Deployment
+```powershell
+# iOS build
+cd ios; pod install; cd ..
+npx react-native run-ios --configuration Release
+
+# Android build
+cd android; .\gradlew assembleRelease
+
+# Fastlane iOS
+fastlane ios beta
+
+# Fastlane Android
+fastlane android beta
+```
+
+---
+
+## Additional Resources
+
+**React Native Documentation**: https://reactnative.dev/
+**Expo Documentation**: https://docs.expo.dev/
+**Firebase**: https://rnfirebase.io/
+**React Navigation**: https://reactnavigation.org/
+**Redux Toolkit**: https://redux-toolkit.js.org/
+**Fastlane**: https://fastlane.tools/
+
 ---
 
 ## Phase 10: Polish & Launch (Week 10)
 
 ### Step 10.1: Mobile Responsiveness
-**Prompt**: "Ensure mobile-first design:
-- Test all pages on mobile viewport
-- Optimize forms for mobile input
-- Add mobile-specific navigation
-- Test touch interactions"
-
-**Deliverables**:
-- Mobile-optimized UI
-- Responsive components
+**Status**: 🟡 In progress
+**Progress**: Navigation flicker resolved, burger menu stable, and key action/button groups made responsive on Income, Trips, Expenses, and Tax Summary pages.
+**Next**: Run full mobile QA across all remaining pages/forms, tune spacing/input sizes, and verify touch targets.
 
 ### Step 10.2: Testing & QA
+**Status**: 🚧 Not started
 **Prompt**: "Implement testing:
 - Unit tests for utility functions
 - API route tests
@@ -786,6 +2529,7 @@ See `STRIPE_SETUP.md` for detailed instructions.
 - Test coverage report
 
 ### Step 10.3: Deployment
+**Status**: 🚧 Not started
 **Prompt**: "Deploy to production:
 - Set up Vercel project
 - Configure production database
@@ -831,9 +2575,11 @@ npx prisma generate
 # Seed database
 npx prisma db seed
 ```
-
+# Tests
 ---
-
+npx tsc --noEmit
+npm test
+ 
 ## Next Steps
 Start with **Step 1.1** and work through each step sequentially. Use the prompts provided to implement each feature. After completing each step, test thoroughly before moving to the next.
 
