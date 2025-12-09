@@ -61,9 +61,11 @@ This document tracks the development progress of DriveGo, breaking down implemen
 - Step 9.6: RBAC & Access Rights Enhancement ✅
 
 **Phase 10: Polish & Launch** 🟡 IN PROGRESS
-- Step 10.1: Mobile Responsiveness 🟡 In Progress
-- Step 10.2: Testing & QA 🚧 Not Started
-- Step 10.3: Deployment 🚧 Not Started
+- Step 10.1: Mobile Responsiveness 🟡 90% Complete
+- Step 10.2: Security & Vulnerability Assessment 🚧 Not Started
+- Step 10.3: Testing & QA 🚧 Not Started
+- Step 10.4: Performance Optimization 🚧 Not Started
+- Step 10.5: Deployment 🚧 Not Started
 
 ### 🚧 Not Started Phases (1/11)
 
@@ -1163,7 +1165,578 @@ model CustomRole {
 
 ---
 
-## Phase 11: Native Mobile Apps - iOS & Android (Week 11-14)
+## Phase 10: Polish & Launch (Week 10)
+
+### Step 10.1: Mobile Responsiveness 🟡 90% COMPLETE
+**Status**: 🟡 **IN PROGRESS** (Started December 8, 2025)
+
+**Completed Today**:
+- ✅ Created comprehensive mobile responsiveness audit document
+- ✅ Implemented Service Worker for PWA functionality
+- ✅ Optimized Expenses, Income, and Trips pages for mobile
+- ✅ All data tables verified mobile-ready with horizontal scroll
+- ✅ 44x44px touch targets on all interactive elements
+- ✅ touch-manipulation CSS for instant tap response
+
+**Remaining (10%)**:
+- [ ] Test forms on 375px viewport (Add Expense, Add Income, Add Trip)
+- [ ] Test GPS tracking on real mobile device
+- [ ] Final QA pass with end-to-end user flows
+- [ ] Run Lighthouse mobile audit (target >90 score)
+
+**Deliverables**:
+- ✅ `MOBILE_RESPONSIVENESS_AUDIT.md` - Testing checklist
+- ✅ `MOBILE_PROGRESS.md` - Implementation tracking
+- ✅ `MOBILE_OPTIMIZATION_COMPLETE.md` - Completion summary
+- ✅ `public/sw.js` - Service Worker with offline support
+- ✅ Mobile-optimized pages: Expenses, Income, Trips
+
+### Step 10.2: Security & Vulnerability Assessment 🚧 NOT STARTED
+**Status**: 🚧 **NOT STARTED**
+
+**Overview**: Comprehensive security audit and vulnerability assessment of the DriveGo application to identify and remediate potential security weaknesses before production deployment. This phase ensures the application meets industry security standards and protects sensitive financial and personal data.
+
+**Security Assessment Workflow**:
+
+1. **Automated Security Scanning** (Day 1-2)
+   - Run npm audit for dependency vulnerabilities
+   - Use OWASP ZAP or Burp Suite for web application scanning
+   - Scan for exposed secrets and API keys with tools like truffleHog or git-secrets
+   - Check for outdated dependencies with npm outdated
+   - Analyze bundle for security issues with Snyk or npm audit
+
+2. **Manual Code Review** (Day 3-5)
+   - Review authentication and authorization logic
+   - Audit API routes for proper access control
+   - Check database queries for SQL injection vulnerabilities
+   - Review file upload handlers for malicious file detection
+   - Examine session management and token handling
+   - Check for exposed sensitive data in client-side code
+   - Review error messages for information leakage
+
+3. **Penetration Testing** (Day 6-7)
+   - Test authentication bypass attempts
+   - Attempt privilege escalation (user → admin)
+   - Test for Cross-Site Scripting (XSS) vulnerabilities
+   - Test for Cross-Site Request Forgery (CSRF) protection
+   - Attempt SQL/NoSQL injection attacks
+   - Test file upload vulnerabilities
+   - Test for insecure direct object references (IDOR)
+   - Verify rate limiting on sensitive endpoints
+
+4. **Remediation & Verification** (Day 8-10)
+   - Fix identified vulnerabilities by priority (Critical → High → Medium → Low)
+   - Re-test fixed vulnerabilities
+   - Document security improvements
+   - Update security policies and procedures
+   - Create security incident response plan
+
+**Security Checklist**:
+
+**A. Injection Flaws Prevention**
+- [ ] **SQL Injection**: All database queries use Prisma ORM with parameterized queries (already implemented)
+- [ ] **NoSQL Injection**: Validate and sanitize all user inputs before database operations
+- [ ] **Command Injection**: Avoid using eval(), exec(), or shell commands with user input
+- [ ] **XSS Prevention**: Sanitize all user-generated content displayed in UI
+- [ ] **LDAP Injection**: N/A (not using LDAP)
+- [ ] **XML Injection**: N/A (not parsing XML)
+
+**B. Authentication & Session Management**
+- [ ] **Password Security**:
+  * Passwords hashed with bcrypt (12 rounds) ✅ Already implemented
+  * Minimum password length enforced (8 characters)
+  * Password complexity requirements (uppercase, lowercase, number, special char)
+  * Password reset tokens expire after 1 hour
+  * Account lockout after 5 failed login attempts
+- [ ] **Session Security**:
+  * NextAuth session tokens use httpOnly cookies ✅ Already implemented
+  * Session tokens regenerated after login ✅ NextAuth handles this
+  * Sessions expire after inactivity (24 hours default)
+  * Implement "remember me" functionality with separate long-lived token
+  * Sessions invalidated on password change
+  * Logout properly clears all session data (client + server)
+- [ ] **Multi-Factor Authentication (MFA)**:
+  * Implement TOTP-based 2FA (Google Authenticator, Authy)
+  * Backup codes for account recovery
+  * Optional: SMS-based 2FA (less secure, but better than nothing)
+- [ ] **JWT Token Security** (if implementing API tokens):
+  * Short expiration time (15 minutes for access tokens)
+  * Refresh token rotation
+  * Token stored in httpOnly cookies or secure storage (not localStorage)
+  * Verify token signature on every request
+
+**C. Authorization & Access Control**
+- [ ] **Server-Side Authorization**:
+  * All API routes check user authentication ✅ Partially implemented
+  * All sensitive operations verify user permissions before execution
+  * Implement row-level security (users can only access their own data)
+  * Admin routes check for admin role ✅ Already implemented with canAccessPlatformAdmin
+  * Tenant isolation enforced (users cannot access other tenants' data) ✅ Implemented in Phase 9.4
+- [ ] **Insecure Direct Object References (IDOR)**:
+  * Never use sequential IDs in URLs (consider UUIDs for sensitive resources)
+  * Always verify resource ownership before returning data
+  * Example: `GET /api/expenses/[id]` must verify expense belongs to authenticated user
+- [ ] **URL/Backspace Navigation Protection**:
+  * Protected pages redirect to login if not authenticated ✅ Implemented with NextAuth
+  * Middleware checks authentication on every protected route
+  * Browser back button does not expose sensitive data after logout
+  * Cache-Control headers prevent caching of sensitive pages
+- [ ] **Role-Based Access Control (RBAC)**:
+  * MASTER_USER, USER_ADMIN, SUB_USER, SUB_USER_READONLY roles enforced ✅ Implemented in Phase 9.6
+  * Custom roles with granular permissions ✅ Implemented in Phase 9.4
+  * Permission checks on both client and server (never trust client-side checks)
+
+**D. Data Protection & Privacy**
+- [ ] **Sensitive Data Exposure**:
+  * No sensitive data in client-side code (API keys, secrets, credentials)
+  * No sensitive data in hidden form fields
+  * No sensitive data in query parameters (use POST body instead)
+  * No sensitive data logged to console in production
+  * Database credentials stored in .env (not committed to Git) ✅ Already configured
+- [ ] **Data Encryption**:
+  * HTTPS enforced on all pages (HTTP Strict Transport Security headers)
+  * Stripe payment data never stored in database ✅ Using Stripe hosted checkout
+  * Credit card numbers never logged or displayed
+  * Database backups encrypted
+  * Encrypt sensitive fields at rest (e.g., social security numbers, tax IDs)
+- [ ] **Privacy Compliance**:
+  * GDPR compliance: User data export, right to be forgotten
+  * Privacy policy and terms of service published
+  * Cookie consent banner (if using tracking cookies)
+  * Data retention policy (delete old data after X years)
+  * Audit log for data access and modifications
+
+**E. Input Validation & Output Encoding**
+- [ ] **Server-Side Validation**:
+  * All user inputs validated on server (never trust client validation)
+  * Use Zod or Joi for schema validation ✅ Using Zod in some routes
+  * Validate data types, lengths, formats (email, phone, postal code)
+  * Whitelist allowed values (e.g., expense categories)
+  * Reject unexpected fields in request body
+- [ ] **File Upload Security**:
+  * Validate file types (check magic bytes, not just extension)
+  * Limit file size (e.g., 5MB for receipts)
+  * Scan uploads for malware (optional: use ClamAV or VirusTotal API)
+  * Store files outside web root or use cloud storage (S3, R2)
+  * Prevent directory traversal attacks (../ in filenames)
+  * Generate random filenames (don't use user-provided names)
+- [ ] **Output Encoding**:
+  * React automatically escapes JSX content ✅ Using React
+  * Sanitize HTML if rendering user-generated content (use DOMPurify)
+  * Encode data in API responses (JSON.stringify handles this)
+
+**F. Cross-Site Request Forgery (CSRF) Protection**
+- [ ] **CSRF Tokens**:
+  * NextAuth provides CSRF protection ✅ Already implemented
+  * All state-changing requests (POST, PUT, DELETE) verify CSRF token
+  * SameSite cookie attribute set to 'Lax' or 'Strict'
+- [ ] **Additional CSRF Mitigation**:
+  * Require re-authentication for sensitive operations (delete account, change password)
+  * Check Referer header on sensitive endpoints
+  * Use custom request headers (X-Requested-With: XMLHttpRequest)
+
+**G. Cross-Site Scripting (XSS) Protection**
+- [ ] **Content Security Policy (CSP)**:
+  * Implement strict CSP headers (disallow inline scripts)
+  * Use nonces or hashes for inline scripts if necessary
+  * Disallow `eval()`, `new Function()`, inline event handlers
+- [ ] **XSS Prevention**:
+  * React escapes content by default ✅ Using React
+  * Never use dangerouslySetInnerHTML without sanitization
+  * Sanitize user input before storing in database
+  * Encode output when rendering user data
+  * Set X-XSS-Protection header
+
+**H. Security Headers**
+- [ ] **Implement Security Headers** (in next.config.ts or middleware):
+  ```javascript
+  headers: {
+    'X-Frame-Options': 'DENY', // Prevent clickjacking
+    'X-Content-Type-Options': 'nosniff', // Prevent MIME sniffing
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(self), camera=(self)', // Feature policy
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; ...",
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload' // HSTS
+  }
+  ```
+
+**I. Rate Limiting & DDoS Protection**
+- [ ] **API Rate Limiting**:
+  * Implement rate limiting on authentication endpoints (5 attempts per minute)
+  * Limit expensive operations (report generation, CSV export) to 10 per hour
+  * Use express-rate-limit or upstash/ratelimit ✅ Partially implemented in lib/rate-limit.ts
+  * Return 429 Too Many Requests with Retry-After header
+- [ ] **Brute Force Protection**:
+  * Account lockout after 5 failed login attempts (30-minute lockout)
+  * CAPTCHA after 3 failed attempts (optional: use hCaptcha or reCAPTCHA)
+  * IP-based rate limiting for login endpoint
+- [ ] **DDoS Mitigation**:
+  * Use Cloudflare or similar CDN/WAF for DDoS protection
+  * Implement request size limits (e.g., 10MB max body size)
+  * Timeout long-running requests (30 seconds max)
+
+**J. Dependency & Supply Chain Security**
+- [ ] **Dependency Management**:
+  * Run `npm audit` regularly and fix vulnerabilities
+  * Keep dependencies up to date (especially security patches)
+  * Use Snyk, Dependabot, or Renovate for automated updates
+  * Remove unused dependencies
+  * Review dependencies before adding (check npm downloads, last updated, maintainer)
+- [ ] **Subresource Integrity (SRI)**:
+  * Use SRI for CDN-loaded scripts (not applicable if bundling all assets)
+  * Pin dependency versions in package.json (avoid ^ or ~)
+
+**K. Logging & Monitoring**
+- [ ] **Security Logging**:
+  * Log all authentication events (login, logout, failed attempts)
+  * Log authorization failures (access denied)
+  * Log sensitive operations (delete user, change subscription, export data)
+  * Never log sensitive data (passwords, tokens, credit cards)
+  * Include timestamp, user ID, IP address, user agent in logs
+- [ ] **Monitoring & Alerting**:
+  * Set up error tracking (Sentry, Rollbar, or similar)
+  * Alert on unusual activity (spike in failed logins, mass data exports)
+  * Monitor for SQL injection attempts (unusual query patterns)
+  * Dashboard showing security metrics (failed logins, rate limit hits)
+- [ ] **Audit Trail**:
+  * Log all changes to sensitive data (who, what, when)
+  * Store audit logs separately from application logs
+  * Implement log retention policy (keep for X months/years)
+
+**L. Third-Party Integrations**
+- [ ] **Stripe Security**:
+  * Never store credit card details ✅ Using Stripe hosted checkout
+  * Use Stripe Elements for PCI DSS compliance
+  * Verify webhook signatures ✅ Implemented in webhook handler
+  * Use test mode for development (separate API keys)
+  * Restrict Stripe API key permissions (least privilege)
+- [ ] **OCR/Tesseract.js Security**:
+  * Client-side processing ✅ No data sent to external API
+  * Validate extracted data before saving
+  * Limit file size and type for OCR processing
+- [ ] **Google Maps / Geolocation API**:
+  * Restrict API key to specific domains/apps
+  * Set usage quotas to prevent abuse
+  * Never expose API keys in client-side code (use backend proxy if needed)
+
+**M. Error Handling & Information Disclosure**
+- [ ] **Error Messages**:
+  * Generic error messages in production ("Something went wrong")
+  * Detailed errors only in development mode
+  * Never expose stack traces to users
+  * Never expose database errors or query details
+  * Log detailed errors server-side for debugging
+- [ ] **HTTP Status Codes**:
+  * Use appropriate status codes (401 Unauthorized, 403 Forbidden, 404 Not Found)
+  * Don't reveal if user exists (same error for "wrong email" and "wrong password")
+
+**N. Database Security**
+- [ ] **Prisma ORM Security**:
+  * Parameterized queries prevent SQL injection ✅ Using Prisma
+  * Connection pooling configured properly
+  * Database user has minimal privileges (not root/superuser)
+  * Separate database users for read-only operations (if applicable)
+- [ ] **Database Configuration**:
+  * PostgreSQL not exposed to public internet (only accessible from app server)
+  * Strong database password (32+ characters, random)
+  * SSL/TLS connection to database
+  * Regular database backups (automated, encrypted, tested)
+  * Database backup stored in separate location (off-site)
+
+**O. Deployment & Infrastructure Security**
+- [ ] **Environment Variables**:
+  * All secrets in environment variables (never hardcoded)
+  * Different secrets for dev, staging, production
+  * Secrets rotated periodically (every 90 days)
+  * Use secret management service (AWS Secrets Manager, Vercel Environment Variables)
+- [ ] **Server Security** (if self-hosting):
+  * Keep OS and software up to date
+  * Firewall configured (only allow necessary ports)
+  * SSH key authentication (disable password login)
+  * Fail2ban or similar intrusion prevention
+  * Regular security patches applied
+- [ ] **Vercel/Cloud Platform Security**:
+  * Enable Vercel Authentication (if needed)
+  * Configure security headers in next.config.ts
+  * Use Vercel's DDoS protection
+  * Enable branch protection on GitHub (require PR reviews)
+
+**P. Incident Response Plan**
+- [ ] **Prepare for Security Incidents**:
+  * Document incident response procedures
+  * Identify security team roles (who handles what)
+  * Communication plan (how to notify users of breach)
+  * Backup and recovery procedures tested
+  * Legal compliance (data breach notification laws)
+
+**Prompt for AI Security Audit**:
+
+```
+Perform a comprehensive security audit of the DriveGo rideshare expense tracking application. Analyze the provided codebase (or specific files) for potential security weaknesses and recommend mitigation strategies. Focus on explaining defensive practices necessary to prevent common vulnerabilities.
+
+**SCOPE OF ANALYSIS**:
+- Next.js 15 web application with TypeScript
+- NextAuth.js authentication with credentials provider
+- Prisma ORM with PostgreSQL database
+- Stripe payment integration
+- Multi-tenant architecture with RBAC
+- File uploads (receipt images stored as base64)
+- Client-side OCR with Tesseract.js
+- GPS tracking via browser Geolocation API
+
+**CRITICAL AREAS TO ANALYZE**:
+
+1. **Injection Flaws**:
+   - Review all database queries in `/app/api/**/route.ts` files
+   - Confirm Prisma ORM prevents SQL injection with parameterized queries
+   - Check for NoSQL injection in JSON field queries (e.g., `features`, `permissions`)
+   - Verify no eval() or new Function() calls with user input
+   - Analyze user input handling in API routes (body parsing, query parameters)
+   - Recommendation: Explain how to use Prisma's type-safe queries and input validation with Zod
+
+2. **Access Control & Authorization**:
+   - Review all API route handlers for authentication checks
+   - Verify user can only access their own data (tenant isolation)
+   - Check for Insecure Direct Object References (IDOR) vulnerabilities
+   - Example: Can user access `/api/expenses/123` if expense belongs to another user?
+   - Verify admin routes require proper role (MASTER_USER, USER_ADMIN)
+   - Check if deleted/disabled users can still access the system
+   - Review custom role permission enforcement in Phase 9.4/9.6 implementation
+   - Recommendation: Explain importance of server-side authorization checks, never trust client-side role checks, implement middleware for consistent authorization
+
+3. **Session Management**:
+   - Analyze NextAuth session configuration in `/lib/auth.ts`
+   - Verify session tokens are httpOnly, secure, and SameSite cookies
+   - Check if sessions properly invalidate on logout (`/api/auth/signout`)
+   - Verify sessions expire after inactivity (current timeout?)
+   - Check if password change invalidates all existing sessions
+   - Review if "remember me" functionality exists and its security
+   - Recommendation: Detail techniques for proper session invalidation, token rotation, and secure cookie configuration
+
+4. **Client-Side Data Exposure**:
+   - Analyze all React components for sensitive data in props or state
+   - Check browser localStorage/sessionStorage usage (are tokens stored there?)
+   - Review if API keys are exposed in client-side code (Stripe publishable key is okay, but check others)
+   - Check if sensitive data is in hidden form fields or HTML comments
+   - Verify error messages don't expose internal details (stack traces, database errors)
+   - Analyze Network tab in DevTools: Are API responses exposing unnecessary data?
+   - Recommendation: Explain how to keep all business logic and sensitive data server-side, validate on server even if client validates
+
+5. **Authentication Security**:
+   - Review password hashing implementation (bcrypt rounds, salt)
+   - Check if password complexity requirements are enforced
+   - Verify account lockout after failed login attempts (currently implemented?)
+   - Check if login rate limiting exists (`/lib/rate-limit.ts`)
+   - Review password reset flow for vulnerabilities (token expiration, token reuse)
+   - Check if two-factor authentication is implemented (recommendation if not)
+   - Recommendation: Explain brute force protection, password policy best practices, MFA implementation
+
+6. **Cross-Site Request Forgery (CSRF)**:
+   - Verify NextAuth CSRF protection is enabled
+   - Check if all state-changing requests (POST, PUT, DELETE) verify CSRF token
+   - Review if SameSite cookie attribute is set
+   - Check if sensitive operations require re-authentication (delete account, change email)
+   - Recommendation: Explain CSRF attack vectors and NextAuth's built-in protection
+
+7. **Cross-Site Scripting (XSS)**:
+   - Review all places where user input is rendered in UI
+   - Check if dangerouslySetInnerHTML is used anywhere (risk if used)
+   - Verify Content Security Policy headers are configured
+   - Check if user-generated content is sanitized (expense descriptions, trip notes, merchant names)
+   - Analyze OCR-extracted text handling (could attacker craft receipt to inject script?)
+   - Recommendation: Explain XSS prevention with React, when to use DOMPurify, CSP headers
+
+8. **File Upload Vulnerabilities**:
+   - Review receipt upload implementation (`/app/expenses/add/page.tsx`)
+   - Check if file type validation exists (magic bytes, not just extension)
+   - Verify file size limits are enforced
+   - Check if uploaded files are served directly (risk of executing malicious files)
+   - Analyze base64 storage: Are images validated before storing?
+   - Check if filenames are sanitized (prevent directory traversal)
+   - Recommendation: Explain file upload security best practices, malware scanning, cloud storage benefits
+
+9. **API Security**:
+   - Review all API routes for input validation
+   - Check if rate limiting is implemented on all endpoints
+   - Verify proper HTTP status codes (401 vs 403, don't reveal if user exists)
+   - Check if API returns unnecessary data (only return fields user needs)
+   - Review error handling (are detailed errors exposed in production?)
+   - Check if CORS is configured correctly
+   - Recommendation: Explain API security principles, rate limiting strategies, input validation with Zod
+
+10. **Sensitive Data Handling**:
+    - Verify Stripe webhooks verify signatures before processing
+    - Check if credit card data is never stored (PCI DSS compliance)
+    - Review if GST/HST numbers, business numbers are encrypted at rest
+    - Check if database backups include sensitive data
+    - Verify .env file is in .gitignore
+    - Analyze if sensitive data is logged (console.log statements in production)
+    - Recommendation: Explain data classification, encryption at rest/in transit, secure logging practices
+
+11. **Dependency Vulnerabilities**:
+    - Run `npm audit` and analyze results
+    - Check if dependencies are up to date
+    - Review if unused dependencies can be removed
+    - Identify high-severity vulnerabilities and recommend updates
+    - Check if package-lock.json is committed (prevents supply chain attacks)
+    - Recommendation: Explain dependency security, Snyk integration, regular audit process
+
+12. **Security Headers**:
+    - Verify security headers in `next.config.ts` or middleware
+    - Check for: X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, CSP
+    - Verify HTTPS is enforced in production
+    - Check if Referrer-Policy is set
+    - Recommendation: Explain each security header and how to implement in Next.js
+
+13. **Multi-Tenancy Security**:
+    - Review tenant isolation in Phase 9.4 implementation
+    - Verify users cannot access other tenants' data
+    - Check if tenant ID is validated on every request
+    - Analyze if admin impersonation is logged and auditable
+    - Review custom role permissions enforcement
+    - Recommendation: Explain tenant isolation strategies, row-level security, audit logging
+
+14. **Third-Party Integration Security**:
+    - Review Stripe integration security (`/lib/stripe.ts`, `/app/api/stripe/**`)
+    - Check if API keys are properly restricted (environment-specific)
+    - Verify webhook signature validation
+    - Analyze if Tesseract.js poses any security risks (client-side processing, so likely safe)
+    - Check if Google Maps API key (if used) is restricted
+    - Recommendation: Explain third-party security best practices, API key management
+
+**OUTPUT FORMAT**:
+For each vulnerability found, provide:
+1. **Severity**: Critical / High / Medium / Low
+2. **Location**: File path and line numbers
+3. **Description**: What is the vulnerability?
+4. **Attack Scenario**: How could an attacker exploit this?
+5. **Impact**: What damage could this cause?
+6. **Remediation**: Step-by-step fix with code examples
+7. **Prevention**: How to prevent this in future development
+
+**PRIORITIZATION**:
+- Critical: Fix immediately (authentication bypass, SQL injection, RCE)
+- High: Fix before production (XSS, CSRF, IDOR, sensitive data exposure)
+- Medium: Fix in next sprint (missing security headers, weak rate limiting)
+- Low: Address when convenient (information disclosure, minor misconfigurations)
+
+**DELIVERABLE**:
+Provide a comprehensive security audit report in markdown format with:
+- Executive summary of findings
+- Detailed vulnerability list with remediation steps
+- Code snippets showing secure implementations
+- Security checklist for ongoing development
+- Recommendations for security tools and processes
+```
+
+**Testing & Verification Steps**:
+
+1. **Run Automated Scans**:
+   ```powershell
+   # Dependency audit
+   npm audit --production
+
+   # Check for outdated packages
+   npm outdated
+
+   # Snyk scan (if installed)
+   npx snyk test
+
+   # OWASP Dependency-Check (optional)
+   # Download from https://owasp.org/www-project-dependency-check/
+   ```
+
+2. **Manual Security Testing**:
+   - Use Burp Suite Community Edition or OWASP ZAP for web app scanning
+   - Test authentication with invalid credentials, expired sessions, concurrent logins
+   - Test authorization by manipulating user IDs in URLs/requests
+   - Test file uploads with malicious files (.php, .exe, oversized files)
+   - Test input fields with XSS payloads: `<script>alert('XSS')</script>`
+   - Test SQL injection: `' OR '1'='1`, `'; DROP TABLE users;--`
+   - Test CSRF by crafting malicious forms
+   - Test rate limiting by sending rapid requests
+
+3. **Code Review Checklist**:
+   ```
+   [ ] Review all API routes for authentication checks
+   [ ] Verify user input validation in all POST/PUT endpoints
+   [ ] Check for hardcoded secrets or API keys
+   [ ] Ensure error messages don't leak sensitive info
+   [ ] Verify file upload handling is secure
+   [ ] Check for insecure direct object references
+   [ ] Review session management implementation
+   [ ] Verify CSRF protection on state-changing endpoints
+   [ ] Check for XSS vulnerabilities in user-generated content
+   [ ] Ensure SQL queries use parameterized statements (Prisma)
+   [ ] Verify sensitive data is not logged
+   [ ] Check security headers are configured
+   [ ] Review third-party integrations (Stripe, etc.)
+   [ ] Verify rate limiting on authentication endpoints
+   [ ] Check password reset flow for vulnerabilities
+   ```
+
+4. **Penetration Testing Scenarios**:
+   - **Scenario 1: Privilege Escalation**
+     1. Register as regular user (SUB_USER role)
+     2. Attempt to access admin routes (`/admin`, `/api/admin/users`)
+     3. Try to modify another user's data (`PUT /api/expenses/[id]` with someone else's ID)
+     4. Attempt to change own role via API manipulation
+     5. Expected: All attempts should fail with 401/403 errors
+
+   - **Scenario 2: IDOR Vulnerability**
+     1. Create expense as User A
+     2. Note expense ID from response
+     3. Log in as User B
+     4. Attempt `GET /api/expenses/[User A's expense ID]`
+     5. Expected: 403 Forbidden or 404 Not Found
+
+   - **Scenario 3: Session Fixation**
+     1. Log in as User A
+     2. Copy session cookie
+     3. Log out
+     4. Try to use old session cookie
+     5. Expected: Session invalidated, redirect to login
+
+   - **Scenario 4: Brute Force Protection**
+     1. Attempt login with wrong password 10 times
+     2. Expected: Account locked or rate limit enforced
+
+   - **Scenario 5: XSS Attack**
+     1. Create expense with description: `<script>alert('XSS')</script>`
+     2. View expense list page
+     3. Expected: Script not executed, shown as text
+
+5. **Security Tools Recommendations**:
+   - **npm audit**: Built-in dependency vulnerability scanner
+   - **Snyk**: Continuous security monitoring (free tier available)
+   - **OWASP ZAP**: Web application security scanner (free, open-source)
+   - **Burp Suite**: Web vulnerability scanner (Community Edition free)
+   - **truffleHog**: Scan Git history for secrets
+   - **git-secrets**: Prevent committing secrets to Git
+   - **Lighthouse**: Security audit (part of Chrome DevTools)
+   - **Sentry**: Error tracking and monitoring
+   - **Dependabot**: Automated dependency updates (GitHub)
+
+**Deliverables**:
+- [ ] Security audit report (PDF/Markdown) with findings and recommendations
+- [ ] Updated codebase with all critical/high vulnerabilities fixed
+- [ ] Security testing documentation
+- [ ] Incident response plan document
+- [ ] Security checklist for ongoing development
+- [ ] Updated deployment guide with security best practices
+
+**Success Criteria**:
+- Zero critical or high-severity vulnerabilities in production
+- All authentication and authorization tests pass
+- npm audit shows no high/critical vulnerabilities
+- Security headers properly configured
+- Rate limiting implemented on all sensitive endpoints
+- Error messages don't expose sensitive information
+- Session management follows security best practices
+- OWASP Top 10 vulnerabilities addressed
+
+### Step 10.3: Testing & QA 🚧 NOT STARTED
+**Status**: 🚧 **NOT STARTED**
 
 ### Overview: Mobile App Strategy
 
