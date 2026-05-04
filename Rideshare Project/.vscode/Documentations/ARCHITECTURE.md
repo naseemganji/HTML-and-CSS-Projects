@@ -1,10 +1,10 @@
-# DriveGo - Dual Platform Architecture
+# GigAssist - Dual Platform Architecture
 
 ## Overview
-DriveGo uses a **hybrid approach** with two applications sharing the same backend:
+GigAssist uses a **hybrid approach** with two applications sharing the same backend:
 
-1. **Web App** (`/drivego`) - Next.js - Admin, reporting, tax features
-2. **Mobile App** (`/drivego-mobile`) - React Native/Expo - GPS tracking, quick expense entry
+1. **Web App** (`/GigAssist`) - Next.js - Admin, reporting, tax features
+2. **Mobile App** (`/GigAssist-mobile`) - React Native/Expo - GPS tracking, quick expense entry
 
 ## Architecture
 
@@ -169,7 +169,7 @@ Both apps use the **same PostgreSQL database** via the Next.js API:
 
 ```
 Rideshare Project/
-├── drivego/                    # Web App (Next.js)
+├── GigAssist/                    # Web App (Next.js)
 │   ├── app/
 │   │   ├── api/               # REST API (used by both apps)
 │   │   ├── dashboard/
@@ -184,7 +184,7 @@ Rideshare Project/
 │   ├── prisma/
 │   └── types/
 │
-├── drivego-mobile/            # Mobile App (React Native)
+├── GigAssist-mobile/            # Mobile App (React Native)
 │   ├── app/                   # Expo Router
 │   │   ├── (auth)/
 │   │   │   ├── login.tsx

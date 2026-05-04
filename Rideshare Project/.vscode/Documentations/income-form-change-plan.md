@@ -51,7 +51,7 @@ Source: `docs/uber lyft earning.csv`
 1. Update `prisma/schema.prisma` with the new nullable columns (or tables) plus defaults that wont break existing logic.
 2. Run:
    ```powershell
-   cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego"
+   cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\GigAssist"
    # ensure dev server is stopped first
    npx prisma migrate dev --name add_income_fields
    npx prisma generate

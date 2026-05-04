@@ -18,7 +18,7 @@ Flow: Authorize a Representative (user -> partner)
    - Scope: "Access to tax packet for tax years: 2023, 2024" or specific scopes (view/download, file on my behalf)
    - Duration: e.g., 12 months or until revoked
    - Rights: how to revoke, how data is used
-   - Legal acknowledgement checkbox: "I authorize <partner> to access my DriveGo tax packet and submit filings on my behalf."
+   - Legal acknowledgement checkbox: "I authorize <partner> to access my GigAssist tax packet and submit filings on my behalf."
 3. User provides e-signature (typed full name) and clicks Confirm.
 4. System stores consent record: user_id, partner_id, scopes, timestamp, IP, signature text, version of consent text.
 5. Notify partner via webhook that access granted; partner can now request the user's tax packet.

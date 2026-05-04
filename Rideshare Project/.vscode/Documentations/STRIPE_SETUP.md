@@ -1,7 +1,7 @@
 # Stripe Integration Setup Guide
 
 ## Overview
-DriveGo uses Stripe for subscription payments. Follow these steps to complete the integration.
+GigAssist uses Stripe for subscription payments. Follow these steps to complete the integration.
 
 ---
 
@@ -20,7 +20,7 @@ DriveGo uses Stripe for subscription payments. Follow these steps to complete th
 1. Go to **Products** in Stripe Dashboard
 2. Click **+ Add Product**
 3. Enter details:
-   - **Name**: DriveGo Standard
+   - **Name**: GigAssist Standard
    - **Description**: Unlimited mileage tracking, GPS, CSV exports, and tax filing support
    - **Pricing**:
      - Monthly: $12 USD per month
@@ -32,7 +32,7 @@ DriveGo uses Stripe for subscription payments. Follow these steps to complete th
 
 1. Click **+ Add Product** again
 2. Enter details:
-   - **Name**: DriveGo Pro
+   - **Name**: GigAssist Pro
    - **Description**: Everything in Standard plus OCR scanning, asset management, and advanced financial reports
    - **Pricing**:
      - Monthly: $20 USD per month

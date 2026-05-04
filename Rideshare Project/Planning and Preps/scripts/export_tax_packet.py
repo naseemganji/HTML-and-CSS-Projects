@@ -12,7 +12,7 @@ tax_year = 2024
 
 # Sample aggregated data (would normally come from app DB)
 sample_t2125 = {
-    'business_name': 'DriveGo User 123',
+    'business_name': 'GigAssist User 123',
     'business_number': '123456789RT0001',
     'tax_year': tax_year,
     'gross_receipts': 50000.00,
@@ -56,7 +56,7 @@ with open(csv_gst, 'w', newline='', encoding='utf-8') as f:
 c = canvas.Canvas(pdf_name, pagesize=letter)
 width, height = letter
 c.setFont('Helvetica-Bold', 14)
-c.drawString(72, height - 72, f'DriveGo Tax Packet — User {user_id} — {tax_year}')
+c.drawString(72, height - 72, f'GigAssist Tax Packet — User {user_id} — {tax_year}')
 
 c.setFont('Helvetica', 10)
 y = height - 110

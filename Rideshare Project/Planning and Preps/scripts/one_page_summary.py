@@ -56,7 +56,7 @@ img = ImageReader(png_out)
 c.drawImage(img, 72, 300, width=468, height=300)
 # add a short text summary
 c.setFont('Helvetica-Bold', 12)
-c.drawString(72, 280, 'DriveGo - Year 3 Net Profit Comparison (selected scenarios)')
+c.drawString(72, 280, 'GigAssist - Year 3 Net Profit Comparison (selected scenarios)')
 c.setFont('Helvetica', 10)
 c.drawString(72, 260, f'Realistic Year3 Net: {real:,.0f} CAD')
 c.drawString(72, 245, f'Enterprise Year3 Net: {ent:,.0f} CAD')

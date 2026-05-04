@@ -43,7 +43,7 @@ transport = paramiko.Transport((host, port))
 transport.connect(username=username, pkey=key)
 sftp = paramiko.SFTPClient.from_transport(transport)
 
-local_zip = 'drivego_batch_2024.zip'
+local_zip = 'GigAssist_batch_2024.zip'
 remote_path = f'/incoming/{username}/{local_zip}'
 sftp.put(local_zip, remote_path)
 sftp.close()

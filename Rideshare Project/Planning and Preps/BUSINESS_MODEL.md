@@ -1,13 +1,13 @@
-BUSINESS MODEL TEMPLATE — GigAssist / DriveGo
+BUSINESS MODEL TEMPLATE — GigAssist / GigAssist
 =========================================================
 
 Purpose
 -------
-This file captures the business model for the DriveGo product. It includes the core value proposition, revenue streams, pricing strategy, unit economics, a 3-year projection template, KPIs, experiments and next steps. Use this as a living document — replace assumptions with real metrics as they become available.
+This file captures the business model for the GigAssist product. It includes the core value proposition, revenue streams, pricing strategy, unit economics, a 3-year projection template, KPIs, experiments and next steps. Use this as a living document — replace assumptions with real metrics as they become available.
 
 1. Executive Summary
 --------------------
-- Product: DriveGo
+- Product: GigAssist
 - Core value: Simple, IRS‑compliant mileage + expense tracking + tax summaries for gig drivers.
 - Target customers: Rideshare & delivery drivers (B2C); fleets and accountants (B2B)
 - Primary monetization (options): subscriptions (premium features), fleet licenses, lead generation/marketplace, partner referrals, paid add-ons.

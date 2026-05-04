@@ -1,7 +1,7 @@
 # Role Name Migration - Completion Summary
 
 ## Overview
-Successfully completed the migration from verbose legacy role names to industry-standard terminology across the entire DriveGo codebase.
+Successfully completed the migration from verbose legacy role names to industry-standard terminology across the entire GigAssist codebase.
 
 ## Changes Implemented
 
@@ -130,7 +130,7 @@ CREATE INDEX "Tenant_email_idx" ON "Tenant"("email");
 
 ### 1. Apply Database Migration
 ```bash
-cd drivego
+cd GigAssist
 npx prisma migrate dev --name update_roles_and_tenant_fields
 # Or for production:
 npx prisma migrate deploy

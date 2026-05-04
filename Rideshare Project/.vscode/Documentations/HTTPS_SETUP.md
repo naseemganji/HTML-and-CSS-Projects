@@ -2,7 +2,7 @@
 # Download from: https://ngrok.com/download
 
 # Step 1: Start your Next.js dev server (if not running)
-# cd drivego
+# cd GigAssist
 # npm run dev
 
 # Step 2: In a new terminal, create HTTPS tunnel

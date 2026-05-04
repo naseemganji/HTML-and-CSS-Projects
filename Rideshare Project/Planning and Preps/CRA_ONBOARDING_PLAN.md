@@ -3,7 +3,7 @@ CRA Onboarding & Direct-Filing Roadmap
 
 Purpose
 -------
-This document is a practical, phased plan to evolve DriveGo into a direct‑filing tax product in Canada (TurboTax / Wealthsimple style). It covers MVP options, partner strategies, CRA electronic filing programs, technical architecture, compliance steps, and a recommended timeline and task list.
+This document is a practical, phased plan to evolve GigAssist into a direct‑filing tax product in Canada (TurboTax / Wealthsimple style). It covers MVP options, partner strategies, CRA electronic filing programs, technical architecture, compliance steps, and a recommended timeline and task list.
 
 Phase Summary
 -------------

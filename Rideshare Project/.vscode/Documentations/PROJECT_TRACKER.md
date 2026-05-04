@@ -1,7 +1,7 @@
-# DriveGo — Project Tracker
+# GigAssist — Project Tracker
 
 ## Overview
-This document tracks the development progress of DriveGo, breaking down implementation into manageable, sequential steps. Each step includes status updates, completed deliverables, and implementation details.
+This document tracks the development progress of GigAssist, breaking down implementation into manageable, sequential steps. Each step includes status updates, completed deliverables, and implementation details.
 
 ---
 
@@ -128,7 +128,7 @@ This document tracks the development progress of DriveGo, breaking down implemen
 - Created Prisma client utility in `lib/prisma.ts`
 
 **Deliverables**:
-- ✅ Next.js project initialized at `/drivego`
+- ✅ Next.js project initialized at `/GigAssist`
 - ✅ package.json with all required dependencies
 - ✅ tsconfig.json configured
 - ✅ Complete folder structure
@@ -149,7 +149,7 @@ This document tracks the development progress of DriveGo, breaking down implemen
 
 **Deliverables**:
 - ✅ Complete Prisma schema with 10 models
-- ✅ PostgreSQL database created (`drivego`)
+- ✅ PostgreSQL database created (`GigAssist`)
 - ✅ Migration files applied
 - ✅ Prisma Client generated
 
@@ -286,7 +286,7 @@ Accounting & Asset Management:
 - ✅ `/app/trips/track/page.tsx` - Full GPS tracking interface
 - ✅ Haversine distance calculation utility
 - ✅ Location permission handling with error states
-- ✅ localStorage trip persistence (key: 'drivego_active_trip')
+- ✅ localStorage trip persistence (key: 'GigAssist_active_trip')
 - ✅ Trip recovery system with user confirmation
 
 ---
@@ -678,7 +678,7 @@ Accounting & Asset Management:
   * Summary of income, expenses, CCA
   * CRA contact information
   * Line-by-line filing guidance
-- Professional ZIP filename: `DriveGo_Tax_Packet_YYYY_BusinessName.zip`
+- Professional ZIP filename: `GigAssist_Tax_Packet_YYYY_BusinessName.zip`
 - Prominent download button in Tax Summary page (blue-purple gradient)
 
 **Deliverables**:
@@ -863,7 +863,7 @@ See `STRIPE_SETUP.md` for detailed instructions.
 - ✅ Migration: `20251207042803_add_company_profile_and_onboarding`
 - ✅ Dashboard redirect logic for incomplete onboarding
 - ✅ Login redirect logic to route new users to onboarding
-- ✅ `/drivego/ONBOARDING_IMPLEMENTATION.md` - Full technical documentation
+- ✅ `/GigAssist/ONBOARDING_IMPLEMENTATION.md` - Full technical documentation
 
 **Company Profile Fields**:
 - Business name, business number, HST/GST number
@@ -1196,7 +1196,7 @@ model CustomRole {
 **Started**: December 8, 2025  
 **Expected Completion**: December 15, 2025
 
-**Overview**: Comprehensive security audit and vulnerability assessment of the DriveGo application to identify and remediate potential security weaknesses before production deployment. This phase ensures the application meets industry security standards and protects sensitive financial and personal data.
+**Overview**: Comprehensive security audit and vulnerability assessment of the GigAssist application to identify and remediate potential security weaknesses before production deployment. This phase ensures the application meets industry security standards and protects sensitive financial and personal data.
 
 **✅ Completed Security Implementations**:
 
@@ -1538,7 +1538,7 @@ model CustomRole {
 **Prompt for AI Security Audit**:
 
 ```
-Perform a comprehensive security audit of the DriveGo rideshare expense tracking application. Analyze the provided codebase (or specific files) for potential security weaknesses and recommend mitigation strategies. Focus on explaining defensive practices necessary to prevent common vulnerabilities.
+Perform a comprehensive security audit of the GigAssist rideshare expense tracking application. Analyze the provided codebase (or specific files) for potential security weaknesses and recommend mitigation strategies. Focus on explaining defensive practices necessary to prevent common vulnerabilities.
 
 **SCOPE OF ANALYSIS**:
 - Next.js 15 web application with TypeScript
@@ -1812,14 +1812,14 @@ Provide a comprehensive security audit report in markdown format with:
 
 ```
 Rideshare Project/
-├── drivego/                    # Existing Next.js web app
+├── GigAssist/                    # Existing Next.js web app
 │   ├── app/
 │   ├── components/
 │   ├── lib/
 │   ├── prisma/
 │   └── ...
 │
-└── drivego-mobile/             # NEW: React Native mobile app
+└── GigAssist-mobile/             # NEW: React Native mobile app
     ├── src/
     │   ├── screens/
     │   ├── components/
@@ -1876,12 +1876,12 @@ Rideshare Project/
 
 **Prompt**: 
 ```
-I want to create native mobile apps (iOS & Android) for my DriveGo rideshare expense tracking application using React Native. I have a fully functional Next.js web application with a complete REST API backend.
+I want to create native mobile apps (iOS & Android) for my GigAssist rideshare expense tracking application using React Native. I have a fully functional Next.js web application with a complete REST API backend.
 
-IMPORTANT: Create this as a SEPARATE project called "drivego-mobile" alongside the existing "drivego" web app. Both will share the same backend API but have independent codebases.
+IMPORTANT: Create this as a SEPARATE project called "GigAssist-mobile" alongside the existing "GigAssist" web app. Both will share the same backend API but have independent codebases.
 
 PROJECT LOCATION:
-Create new folder at: C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile
+Create new folder at: C:\Users\nasee\Web and Software Development Course\Rideshare Project\GigAssist-mobile
 
 PROJECT REQUIREMENTS:
 1. Initialize a new React Native project with TypeScript
@@ -1905,21 +1905,21 @@ PROJECT REQUIREMENTS:
    - Redux store setup with auth slice
    - TypeScript interfaces for all API responses matching backend schema
 6. Implement splash screen and app icons (placeholders)
-7. Configure app name: "DriveGo" for both platforms
+7. Configure app name: "GigAssist" for both platforms
 
-EXISTING BACKEND API (from drivego folder):
+EXISTING BACKEND API (from GigAssist folder):
 - Base URL: https://your-domain.com/api (or http://localhost:3000/api for dev)
 - Authentication: NextAuth with credentials provider
 - Endpoints: /api/auth, /api/trips, /api/expenses, /api/income, /api/vehicles, /api/reports, /api/tax-summary
 - All endpoints use JWT authentication via session cookies or Bearer tokens
 
 SHARED CODE STRATEGY:
-- Copy utility functions from drivego/lib/ to drivego-mobile/src/utils/ as needed
+- Copy utility functions from GigAssist/lib/ to GigAssist-mobile/src/utils/ as needed
 - Examples: Haversine distance calculation, date formatters, currency formatters
 - Keep TypeScript types in sync manually or via shared types file
 
 DELIVERABLES:
-- React Native project initialized at drivego-mobile/ with Expo or React Native CLI
+- React Native project initialized at GigAssist-mobile/ with Expo or React Native CLI
 - package.json with all dependencies
 - tsconfig.json for TypeScript
 - Complete folder structure with boilerplate
@@ -1950,7 +1950,7 @@ Please provide complete code with proper TypeScript types and follow React Nativ
 
 **Prompt**:
 ```
-Implement complete authentication and user management for the DriveGo mobile app, integrating with the existing NextAuth backend.
+Implement complete authentication and user management for the GigAssist mobile app, integrating with the existing NextAuth backend.
 
 REQUIREMENTS:
 1. Create authentication screens:
@@ -2025,7 +2025,7 @@ Please provide complete implementation with TypeScript, proper error handling, a
 
 **Prompt**:
 ```
-Implement comprehensive trip tracking functionality with real-time GPS tracking, automatic mileage calculation, and background tracking for the DriveGo mobile app.
+Implement comprehensive trip tracking functionality with real-time GPS tracking, automatic mileage calculation, and background tracking for the GigAssist mobile app.
 
 REQUIREMENTS:
 1. Install and configure location services:
@@ -2140,7 +2140,7 @@ Please provide complete implementation with TypeScript, proper state management,
 
 **Prompt**:
 ```
-Implement comprehensive expense tracking with camera-based receipt scanning, OCR text extraction, and offline support for the DriveGo mobile app.
+Implement comprehensive expense tracking with camera-based receipt scanning, OCR text extraction, and offline support for the GigAssist mobile app.
 
 REQUIREMENTS:
 1. Install camera and OCR dependencies:
@@ -2283,7 +2283,7 @@ Please provide complete implementation with TypeScript, proper camera handling, 
 
 **Prompt**:
 ```
-Implement income tracking and vehicle management features for the DriveGo mobile app, allowing users to record rideshare earnings and manage their vehicle fleet.
+Implement income tracking and vehicle management features for the GigAssist mobile app, allowing users to record rideshare earnings and manage their vehicle fleet.
 
 REQUIREMENTS:
 
@@ -2447,7 +2447,7 @@ Please provide complete implementation with TypeScript, proper form validation, 
 
 **Prompt**:
 ```
-Implement comprehensive reports and analytics dashboard for the DriveGo mobile app, providing visual insights into business performance with charts, graphs, and exportable reports.
+Implement comprehensive reports and analytics dashboard for the GigAssist mobile app, providing visual insights into business performance with charts, graphs, and exportable reports.
 
 REQUIREMENTS:
 1. Install charting library:
@@ -2626,7 +2626,7 @@ Please provide complete implementation with TypeScript, interactive charts, prop
 
 **Prompt**:
 ```
-Implement comprehensive settings and profile management screens for the DriveGo mobile app, including app preferences, account settings, subscription management, and support features.
+Implement comprehensive settings and profile management screens for the GigAssist mobile app, including app preferences, account settings, subscription management, and support features.
 
 REQUIREMENTS:
 1. Create Main Settings Screen:
@@ -2802,7 +2802,7 @@ Please provide complete implementation with TypeScript, proper form validation, 
 
 **Prompt**:
 ```
-Implement push notifications, background services, and app lifecycle management for the DriveGo mobile app to enhance user engagement and provide timely reminders.
+Implement push notifications, background services, and app lifecycle management for the GigAssist mobile app to enhance user engagement and provide timely reminders.
 
 REQUIREMENTS:
 1. Set up Firebase Cloud Messaging (FCM):
@@ -2853,13 +2853,13 @@ REQUIREMENTS:
    - Battery optimization strategies
    - Task cancellation on app termination
 7. Set up deep linking:
-   - Configure URL schemes (drivego://)
-   - Handle universal links (https://drivego.app/...)
+   - Configure URL schemes (GigAssist://)
+   - Handle universal links (https://GigAssist.app/...)
    - Parse deep link parameters
    - Navigate to screens with context:
-     * drivego://trips/123 → Trip details
-     * drivego://expenses/add → Add expense
-     * drivego://reports/tax → Tax summary
+     * GigAssist://trips/123 → Trip details
+     * GigAssist://expenses/add → Add expense
+     * GigAssist://reports/tax → Tax summary
 8. Implement app lifecycle management:
    - App foreground: Resume sync, refresh data
    - App background: Pause non-critical tasks
@@ -2940,7 +2940,7 @@ Please provide complete implementation with TypeScript, proper permission handli
 
 **Prompt**:
 ```
-Implement comprehensive testing, performance optimization, and production deployment for the DriveGo mobile apps (iOS & Android).
+Implement comprehensive testing, performance optimization, and production deployment for the GigAssist mobile apps (iOS & Android).
 
 REQUIREMENTS:
 
@@ -3178,18 +3178,18 @@ Please provide complete testing setup, optimization strategies, deployment scrip
 cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project"
 
 # Option 1: Create with Expo (Recommended for beginners)
-npx create-expo-app drivego-mobile --template
+npx create-expo-app GigAssist-mobile --template
 
 # Option 2: Create with React Native CLI (More control)
-npx react-native init DriveGoMobile --template react-native-template-typescript
-cd DriveGoMobile
-# Then rename folder to drivego-mobile
+npx react-native init GigAssistMobile --template react-native-template-typescript
+cd GigAssistMobile
+# Then rename folder to GigAssist-mobile
 ```
 
 ### React Native CLI
 ```powershell
 # Navigate to mobile project
-cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile"
+cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\GigAssist-mobile"
 
 # Run on iOS
 npx react-native run-ios
@@ -3207,7 +3207,7 @@ npx react-native start --reset-cache
 ### Expo CLI (Alternative)
 ```powershell
 # Navigate to mobile project
-cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\drivego-mobile"
+cd "C:\Users\nasee\Web and Software Development Course\Rideshare Project\GigAssist-mobile"
 
 # Start development server
 npx expo start
@@ -3322,10 +3322,10 @@ fastlane android beta
 ### Initialize Project
 ```bash
 # Create Next.js app
-npx create-next-app@latest drivego --typescript --tailwind --app --src-dir
+npx create-next-app@latest GigAssist --typescript --tailwind --app --src-dir
 
 # Install dependencies
-cd drivego
+cd GigAssist
 npm install prisma @prisma/client next-auth bcryptjs
 npm install -D @types/bcryptjs
 
